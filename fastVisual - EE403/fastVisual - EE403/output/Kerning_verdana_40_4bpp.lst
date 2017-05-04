@@ -1,0 +1,3 @@
+L 1 "C:\TouchGFXProjects\Button\generated\fonts\src\Kerning_verdana_40_4bpp.cpp"
+C "C:\TouchGFXProjects\Button\generated\fonts\src\Kerning_verdana_40_4bpp.cpp" 1 29 cannot open source input file "touchgfx/Font.hpp": No such file or directory
+N#include <touchgfx/Font.hpp>

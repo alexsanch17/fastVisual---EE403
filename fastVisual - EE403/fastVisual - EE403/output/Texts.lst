@@ -1,0 +1,156 @@
+L 1 "C:\TouchGFXProjects\Button\generated\texts\src\Texts.cpp"
+N#include <stdarg.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h" 1
+N/* stdarg.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.8 */
+N/* Copyright (C) Codemist Ltd., 1988                            */
+N/* Copyright (C) ARM Ltd., 1991-1999. All rights reserved */
+N
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N#ifndef __stdarg_h
+N#define __stdarg_h
+N#define __ARMCLIB_VERSION 5060019
+N
+N  #ifndef __STDARG_DECLS
+N  #define __STDARG_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+N      namespace std {
+N          #define __CLIBNS ::std::
+N          extern "C" {
+N    #else
+S      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N/*
+N * stdarg.h declares a type and defines macros for advancing through a
+N * list of arguments whose number and types are not known to the called
+N * function when it is translated. A function may be called with a variable
+N * number of arguments of differing types. Its parameter list contains one or
+N * more parameters. The rightmost parameter plays a special role in the access
+N * mechanism, and will be called parmN in this description.
+N */
+N
+N/* N.B. <stdio.h> is required to declare vfprintf() without defining      */
+N/* va_list.  Clearly the type __va_list there must keep in step.          */
+N#ifdef __clang__
+S  typedef __builtin_va_list va_list;
+S  #define va_start(ap, param) __builtin_va_start(ap, param)
+S  #define va_end(ap)          __builtin_va_end(ap)
+S  #define va_arg(ap, type)    __builtin_va_arg(ap, type)
+S  #if __STDC_VERSION__ >= 199900L || __cplusplus >= 201103L || !defined(__STRICT_ANSI__)
+S  #define va_copy(dest, src)  __builtin_va_copy(dest, src)
+S  #endif
+N#else
+N  #ifdef __TARGET_ARCH_AARCH64
+S    typedef struct __va_list {
+S      void *__stack;
+S      void *__gr_top;
+S      void *__vr_top;
+S      int __gr_offs;
+S      int __vr_offs;
+S    } va_list;
+N  #else
+N    typedef struct __va_list { void *__ap; } va_list;
+N  #endif
+N   /*
+N    * an array type suitable for holding information needed by the macro va_arg
+N    * and the function va_end. The called function shall declare a variable
+N    * (referred to as ap) having type va_list. The variable ap may be passed as
+N    * an argument to another function.
+N    * Note: va_list is an array type so that when an object of that type
+N    * is passed as an argument it gets passed by reference.
+N    */
+N  #define va_start(ap, parmN) __va_start(ap, parmN)
+N
+N   /*
+N    * The va_start macro shall be executed before any access to the unnamed
+N    * arguments. The parameter ap points to an object that has type va_list.
+N    * The va_start macro initialises ap for subsequent use by va_arg and
+N    * va_end. The parameter parmN is the identifier of the rightmost parameter
+N    * in the variable parameter list in the function definition (the one just
+N    * before the '...'). If the parameter parmN is declared with the register
+N    * storage class an error is given.
+N    * If parmN is a narrow type (char, short, float) an error is given in
+N    * strict ANSI mode, or a warning otherwise.
+N    * Returns: no value.
+N    */
+N  #define va_arg(ap, type) __va_arg(ap, type)
+N
+N   /*
+N    * The va_arg macro expands to an expression that has the type and value of
+N    * the next argument in the call. The parameter ap shall be the same as the
+N    * va_list ap initialised by va_start. Each invocation of va_arg modifies
+N    * ap so that successive arguments are returned in turn. The parameter
+N    * 'type' is a type name such that the type of a pointer to an object that
+N    * has the specified type can be obtained simply by postfixing a * to
+N    * 'type'. If type is a narrow type, an error is given in strict ANSI
+N    * mode, or a warning otherwise. If the type is an array or function type,
+N    * an error is given.
+N    * In non-strict ANSI mode, 'type' is allowed to be any expression.
+N    * Returns: The first invocation of the va_arg macro after that of the
+N    *          va_start macro returns the value of the argument after that
+N    *          specified by parmN. Successive invocations return the values of
+N    *          the remaining arguments in succession.
+N    *          The result is cast to 'type', even if 'type' is narrow.
+N    */
+N
+N#define __va_copy(dest, src) ((void)((dest) = (src)))
+N
+N#if !defined(__STRICT_ANSI__) || (defined(__STDC_VERSION__) && 199901L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X#if !0L || (0L && 199901L <= __STDC_VERSION__) || (1L && 201103L <= 199711L)
+N   /* va_copy is in C99 and non-strict C90 and non-strict C++
+N    * __va_copy is always present.
+N    */
+N  #define va_copy(dest, src) ((void)((dest) = (src)))
+N
+N   /* The va_copy macro makes the va_list dest be a copy of
+N    * the va_list src, as if the va_start macro had been applied
+N    * to it followed by the same sequence of uses of the va_arg
+N    * macro as had previously been used to reach the present state
+N    * of src.
+N    */
+N#endif
+N
+N#define va_end(ap) __va_end(ap)
+N   /*
+N    * The va_end macro facilitates a normal return from the function whose
+N    * variable argument list was referenced by the expansion of va_start that
+N    * initialised the va_list ap. If the va_end macro is not invoked before
+N    * the return, the behaviour is undefined.
+N    * Returns: no value.
+N    */
+N#endif /* __clang__ */
+N
+N    #ifdef __cplusplus
+N         }  /* extern "C" */
+N      }  /* namespace std */
+N    #endif /* __cplusplus */
+N
+N    #ifdef __GNUC__
+S     /* be cooperative with glibc */
+S     typedef __CLIBNS va_list __gnuc_va_list;
+S     #define __GNUC_VA_LIST
+S     #undef __need___va_list
+N    #endif
+N
+N  #endif /* __STDARG_DECLS */
+N
+N  #ifdef __cplusplus
+N    #ifndef __STDARG_NO_EXPORTS
+N      using ::std::va_list;
+N    #endif
+N  #endif /* __cplusplus */
+N#endif
+N
+N/* end of stdarg.h */
+N
+L 2 "C:\TouchGFXProjects\Button\generated\texts\src\Texts.cpp" 2
+C "C:\TouchGFXProjects\Button\generated\texts\src\Texts.cpp" 2 30 cannot open source input file "touchgfx/Texts.hpp": No such file or directory
+N#include <touchgfx/Texts.hpp>

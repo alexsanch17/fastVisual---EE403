@@ -1,0 +1,6 @@
+--cpu Cortex-M4.fp -g --apcs=interwork --pd "__MICROLIB SETA 1"
+-I"C:\Users\emh203\Google Drive\Teaching\EE403W\Spring 2017\Labs\Lab 5\LAB5\RTE\_Lab5"
+-IC:\Keil_v5\ARM\PACK\Keil\LPC54000_DFP\2.1.0\LPCOpen\lpc5460x\chip_5460x\inc
+-IC:\Keil_v5\ARM\CMSIS\Include
+--pd "__UVISION_VERSION SETA 522" --pd "CHIP_LPC5460X SETA 1" --pd "CPU_LPC54114J256_M4 SETA 1" --pd "DEBUG SETA 1" --pd "__CC_ARM SETA 1" --pd "KEIL SETA 1"
+--list .\output\startup_lpc54608.lst -o debug\startup_lpc54608.o --depend debug\startup_lpc54608.d "SRC\System\startup_LPC54608.s"

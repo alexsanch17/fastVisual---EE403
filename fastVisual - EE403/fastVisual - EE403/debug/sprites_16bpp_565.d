@@ -1,0 +1,9 @@
+debug\sprites_16bpp_565.o: SRC\eGFX\Sprites\Sprites_16BPP_565.c
+debug\sprites_16bpp_565.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+debug\sprites_16bpp_565.o: .\SRC\eGFX\eGFX.h
+debug\sprites_16bpp_565.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+debug\sprites_16bpp_565.o: .\SRC\eGFX\eGFX_DataTypes.h
+debug\sprites_16bpp_565.o: .\SRC\eGFX\eGFX_DataTypes.h
+debug\sprites_16bpp_565.o: SRC\eGFX\Sprites\Sprites_16BPP_565.h
+debug\sprites_16bpp_565.o: .\SRC\eGFX\eGFX.h
+debug\sprites_16bpp_565.o: .\SRC\eGFX\eGFX_DataTypes.h

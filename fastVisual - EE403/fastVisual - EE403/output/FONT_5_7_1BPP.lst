@@ -1,0 +1,4494 @@
+L 1 "SRC\eGFX\Fonts\FONT_5_7_1BPP.c"
+N#include "stdint.h" 
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h" 1
+N/* Copyright (C) ARM Ltd., 1999,2014 */
+N/* All rights reserved */
+N
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N#ifndef __stdint_h
+N#define __stdint_h
+N#define __ARMCLIB_VERSION 5060019
+N
+N  #ifdef __INT64_TYPE__
+S    /* armclang predefines '__INT64_TYPE__' and '__INT64_C_SUFFIX__' */
+S    #define __INT64 __INT64_TYPE__
+N  #else
+N    /* armcc has builtin '__int64' which can be used in --strict mode */
+N    #define __INT64 __int64
+N    #define __INT64_C_SUFFIX__ ll
+N  #endif
+N  #define __PASTE2(x, y) x ## y
+N  #define __PASTE(x, y) __PASTE2(x, y)
+N  #define __INT64_C(x)  __ESCAPE__(__PASTE(x, __INT64_C_SUFFIX__))
+N  #define __UINT64_C(x)  __ESCAPE__(__PASTE(x ## u, __INT64_C_SUFFIX__))
+N  #if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X  #if 0L || (1L && !0L)
+N    /* armclang and non-strict armcc allow 'long long' in system headers */
+N    #define __LONGLONG long long
+N  #else
+S    /* strict armcc has '__int64' */
+S    #define __LONGLONG __int64
+N  #endif
+N
+N  #ifndef __STDINT_DECLS
+N  #define __STDINT_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+S      namespace std {
+S          #define __CLIBNS std::
+S          extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N
+N/*
+N * 'signed' is redundant below, except for 'signed char' and if
+N * the typedef is used to declare a bitfield.
+N */
+N
+N    /* 7.18.1.1 */
+N
+N    /* exact-width signed integer types */
+Ntypedef   signed          char int8_t;
+Ntypedef   signed short     int int16_t;
+Ntypedef   signed           int int32_t;
+Ntypedef   signed       __INT64 int64_t;
+Xtypedef   signed       __int64 int64_t;
+N
+N    /* exact-width unsigned integer types */
+Ntypedef unsigned          char uint8_t;
+Ntypedef unsigned short     int uint16_t;
+Ntypedef unsigned           int uint32_t;
+Ntypedef unsigned       __INT64 uint64_t;
+Xtypedef unsigned       __int64 uint64_t;
+N
+N    /* 7.18.1.2 */
+N
+N    /* smallest type of at least n bits */
+N    /* minimum-width signed integer types */
+Ntypedef   signed          char int_least8_t;
+Ntypedef   signed short     int int_least16_t;
+Ntypedef   signed           int int_least32_t;
+Ntypedef   signed       __INT64 int_least64_t;
+Xtypedef   signed       __int64 int_least64_t;
+N
+N    /* minimum-width unsigned integer types */
+Ntypedef unsigned          char uint_least8_t;
+Ntypedef unsigned short     int uint_least16_t;
+Ntypedef unsigned           int uint_least32_t;
+Ntypedef unsigned       __INT64 uint_least64_t;
+Xtypedef unsigned       __int64 uint_least64_t;
+N
+N    /* 7.18.1.3 */
+N
+N    /* fastest minimum-width signed integer types */
+Ntypedef   signed           int int_fast8_t;
+Ntypedef   signed           int int_fast16_t;
+Ntypedef   signed           int int_fast32_t;
+Ntypedef   signed       __INT64 int_fast64_t;
+Xtypedef   signed       __int64 int_fast64_t;
+N
+N    /* fastest minimum-width unsigned integer types */
+Ntypedef unsigned           int uint_fast8_t;
+Ntypedef unsigned           int uint_fast16_t;
+Ntypedef unsigned           int uint_fast32_t;
+Ntypedef unsigned       __INT64 uint_fast64_t;
+Xtypedef unsigned       __int64 uint_fast64_t;
+N
+N    /* 7.18.1.4 integer types capable of holding object pointers */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+Stypedef   signed       __INT64 intptr_t;
+Stypedef unsigned       __INT64 uintptr_t;
+N#else
+Ntypedef   signed           int intptr_t;
+Ntypedef unsigned           int uintptr_t;
+N#endif
+N
+N    /* 7.18.1.5 greatest-width integer types */
+Ntypedef   signed     __LONGLONG intmax_t;
+Xtypedef   signed     long long intmax_t;
+Ntypedef unsigned     __LONGLONG uintmax_t;
+Xtypedef unsigned     long long uintmax_t;
+N
+N
+N#if !defined(__cplusplus) || defined(__STDC_LIMIT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.2.1 */
+N
+N    /* minimum values of exact-width signed integer types */
+N#define INT8_MIN                   -128
+N#define INT16_MIN                -32768
+N#define INT32_MIN          (~0x7fffffff)   /* -2147483648 is unsigned */
+N#define INT64_MIN  __INT64_C(~0x7fffffffffffffff) /* -9223372036854775808 is unsigned */
+N
+N    /* maximum values of exact-width signed integer types */
+N#define INT8_MAX                    127
+N#define INT16_MAX                 32767
+N#define INT32_MAX            2147483647
+N#define INT64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of exact-width unsigned integer types */
+N#define UINT8_MAX                   255
+N#define UINT16_MAX                65535
+N#define UINT32_MAX           4294967295u
+N#define UINT64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.2 */
+N
+N    /* minimum values of minimum-width signed integer types */
+N#define INT_LEAST8_MIN                   -128
+N#define INT_LEAST16_MIN                -32768
+N#define INT_LEAST32_MIN          (~0x7fffffff)
+N#define INT_LEAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of minimum-width signed integer types */
+N#define INT_LEAST8_MAX                    127
+N#define INT_LEAST16_MAX                 32767
+N#define INT_LEAST32_MAX            2147483647
+N#define INT_LEAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of minimum-width unsigned integer types */
+N#define UINT_LEAST8_MAX                   255
+N#define UINT_LEAST16_MAX                65535
+N#define UINT_LEAST32_MAX           4294967295u
+N#define UINT_LEAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.3 */
+N
+N    /* minimum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MIN           (~0x7fffffff)
+N#define INT_FAST16_MIN          (~0x7fffffff)
+N#define INT_FAST32_MIN          (~0x7fffffff)
+N#define INT_FAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MAX             2147483647
+N#define INT_FAST16_MAX            2147483647
+N#define INT_FAST32_MAX            2147483647
+N#define INT_FAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of fastest minimum-width unsigned integer types */
+N#define UINT_FAST8_MAX            4294967295u
+N#define UINT_FAST16_MAX           4294967295u
+N#define UINT_FAST32_MAX           4294967295u
+N#define UINT_FAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.4 */
+N
+N    /* minimum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MIN INT64_MIN
+N#else
+N#define INTPTR_MIN INT32_MIN
+N#endif
+N
+N    /* maximum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MAX INT64_MAX
+N#else
+N#define INTPTR_MAX INT32_MAX
+N#endif
+N
+N    /* maximum value of pointer-holding unsigned integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define UINTPTR_MAX UINT64_MAX
+N#else
+N#define UINTPTR_MAX UINT32_MAX
+N#endif
+N
+N    /* 7.18.2.5 */
+N
+N    /* minimum value of greatest-width signed integer type */
+N#define INTMAX_MIN  __ESCAPE__(~0x7fffffffffffffffll)
+N
+N    /* maximum value of greatest-width signed integer type */
+N#define INTMAX_MAX  __ESCAPE__(9223372036854775807ll)
+N
+N    /* maximum value of greatest-width unsigned integer type */
+N#define UINTMAX_MAX __ESCAPE__(18446744073709551615ull)
+N
+N    /* 7.18.3 */
+N
+N    /* limits of ptrdiff_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define PTRDIFF_MIN INT64_MIN
+S#define PTRDIFF_MAX INT64_MAX
+N#else
+N#define PTRDIFF_MIN INT32_MIN
+N#define PTRDIFF_MAX INT32_MAX
+N#endif
+N
+N    /* limits of sig_atomic_t */
+N#define SIG_ATOMIC_MIN (~0x7fffffff)
+N#define SIG_ATOMIC_MAX   2147483647
+N
+N    /* limit of size_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define SIZE_MAX UINT64_MAX
+N#else
+N#define SIZE_MAX UINT32_MAX
+N#endif
+N
+N    /* limits of wchar_t */
+N    /* NB we have to undef and redef because they're defined in both
+N     * stdint.h and wchar.h */
+N#undef WCHAR_MIN
+N#undef WCHAR_MAX
+N
+N#if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X#if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S  #define WCHAR_MIN   0
+S  #define WCHAR_MAX   0xffffffffU
+N#else
+N  #define WCHAR_MIN   0
+N  #define WCHAR_MAX   65535
+N#endif
+N
+N    /* limits of wint_t */
+N#define WINT_MIN (~0x7fffffff)
+N#define WINT_MAX 2147483647
+N
+N#endif /* __STDC_LIMIT_MACROS */
+N
+N#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.4.1 macros for minimum-width integer constants */
+N#define INT8_C(x)   (x)
+N#define INT16_C(x)  (x)
+N#define INT32_C(x)  (x)
+N#define INT64_C(x)  __INT64_C(x)
+N
+N#define UINT8_C(x)  (x ## u)
+N#define UINT16_C(x) (x ## u)
+N#define UINT32_C(x) (x ## u)
+N#define UINT64_C(x) __UINT64_C(x)
+N
+N    /* 7.18.4.2 macros for greatest-width integer constants */
+N#define INTMAX_C(x)  __ESCAPE__(x ## ll)
+N#define UINTMAX_C(x) __ESCAPE__(x ## ull)
+N
+N#endif /* __STDC_CONSTANT_MACROS */
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDINT_DECLS */
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDINT_NO_EXPORTS
+S      using ::std::int8_t;
+S      using ::std::int16_t;
+S      using ::std::int32_t;
+S      using ::std::int64_t;
+S      using ::std::uint8_t;
+S      using ::std::uint16_t;
+S      using ::std::uint32_t;
+S      using ::std::uint64_t;
+S      using ::std::int_least8_t;
+S      using ::std::int_least16_t;
+S      using ::std::int_least32_t;
+S      using ::std::int_least64_t;
+S      using ::std::uint_least8_t;
+S      using ::std::uint_least16_t;
+S      using ::std::uint_least32_t;
+S      using ::std::uint_least64_t;
+S      using ::std::int_fast8_t;
+S      using ::std::int_fast16_t;
+S      using ::std::int_fast32_t;
+S      using ::std::int_fast64_t;
+S      using ::std::uint_fast8_t;
+S      using ::std::uint_fast16_t;
+S      using ::std::uint_fast32_t;
+S      using ::std::uint_fast64_t;
+S      using ::std::intptr_t;
+S      using ::std::uintptr_t;
+S      using ::std::intmax_t;
+S      using ::std::uintmax_t;
+S    #endif
+N  #endif /* __cplusplus */
+N
+N#undef __INT64
+N#undef __LONGLONG
+N
+N#endif /* __stdint_h */
+N
+N/* end of stdint.h */
+L 2 "SRC\eGFX\Fonts\FONT_5_7_1BPP.c" 2
+N#include "eGFX.h" 
+L 1 ".\SRC\eGFX\eGFX.h" 1
+N
+N#ifdef __cplusplus
+Sextern "C" {
+N#endif
+N
+N
+N#include <stdlib.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h" 1
+N/* stdlib.h: ANSI draft (X3J11 May 88) library header, section 4.10 */
+N/* Copyright (C) Codemist Ltd., 1988-1993.                          */
+N/* Copyright 1991-1998,2014 ARM Limited. All rights reserved.       */
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N 
+N/*
+N * stdlib.h declares four types, several general purpose functions,
+N * and defines several macros.
+N */
+N
+N#ifndef __stdlib_h
+N#define __stdlib_h
+N#define __ARMCLIB_VERSION 5060019
+N
+N#if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X#if 0L || (1L && !0L)
+N  /* armclang and non-strict armcc allow 'long long' in system headers */
+N  #define __LONGLONG long long
+N#else
+S  /* strict armcc has '__int64' */
+S  #define __LONGLONG __int64
+N#endif
+N
+N#define _ARMABI __declspec(__nothrow)
+N#define _ARMABI_PURE __declspec(__nothrow) __attribute__((const))
+N#define _ARMABI_NORETURN __declspec(__nothrow) __declspec(__noreturn)
+N#define _ARMABI_THROW
+N
+N  #ifndef __STDLIB_DECLS
+N  #define __STDLIB_DECLS
+N
+N  /*
+N   * Some of these declarations are new in C99.  To access them in C++
+N   * you can use -D__USE_C99_STDLIB (or -D__USE_C99ALL).
+N   */
+N  #ifndef __USE_C99_STDLIB
+N    #if defined(__USE_C99_ALL) || (defined(__STDC_VERSION__) && 199901L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X    #if 0L || (1L && 199901L <= 199901L) || (0L && 201103L <= __cplusplus)
+N      #define __USE_C99_STDLIB 1
+N    #endif
+N  #endif
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+S      namespace std {
+S          #define __CLIBNS ::std::
+S          extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N#if defined(__cplusplus) || !defined(__STRICT_ANSI__)
+X#if 0L || !0L
+N /* unconditional in C++ and non-strict C for consistency of debug info */
+N  #if __sizeof_ptr == 8
+X  #if 4 == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+N  #else
+N    typedef unsigned int size_t;   /* see <stddef.h> */
+N  #endif
+N#elif !defined(__size_t)
+S  #define __size_t 1
+S  #if __sizeof_ptr == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+S  #else
+S    typedef unsigned int size_t;   /* see <stddef.h> */
+S  #endif
+N#endif
+N
+N#undef NULL
+N#define NULL 0                   /* see <stddef.h> */
+N
+N#ifndef __cplusplus  /* wchar_t is a builtin type for C++ */
+N  #if !defined(__STRICT_ANSI__)
+X  #if !0L
+N   /* unconditional in non-strict C for consistency of debug info */
+N   #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X   #if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S    typedef unsigned int wchar_t; /* see <stddef.h> */
+N   #else
+N    typedef unsigned short wchar_t; /* see <stddef.h> */
+N   #endif
+N  #elif !defined(__wchar_t)
+S    #define __wchar_t 1
+S   #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S    typedef unsigned int wchar_t; /* see <stddef.h> */
+S   #else
+S    typedef unsigned short wchar_t; /* see <stddef.h> */
+S   #endif
+N  #endif
+N#endif
+N
+Ntypedef struct div_t { int quot, rem; } div_t;
+N   /* type of the value returned by the div function. */
+Ntypedef struct ldiv_t { long int quot, rem; } ldiv_t;
+N   /* type of the value returned by the ldiv function. */
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Ntypedef struct lldiv_t { __LONGLONG quot, rem; } lldiv_t;
+Xtypedef struct lldiv_t { long long quot, rem; } lldiv_t;
+N   /* type of the value returned by the lldiv function. */
+N#endif
+N
+N#ifdef __EXIT_FAILURE
+S#  define EXIT_FAILURE __EXIT_FAILURE
+S   /*
+S    * an integral expression which may be used as an argument to the exit
+S    * function to return unsuccessful termination status to the host
+S    * environment.
+S    */
+N#else
+N#  define EXIT_FAILURE 1  /* unixoid */
+N#endif
+N#define EXIT_SUCCESS 0
+N   /*
+N    * an integral expression which may be used as an argument to the exit
+N    * function to return successful termination status to the host
+N    * environment.
+N    */
+N
+N   /*
+N    * Defining __USE_ANSI_EXAMPLE_RAND at compile time switches to
+N    * the example implementation of rand() and srand() provided in
+N    * the ANSI C standard. This implementation is very poor, but is
+N    * provided for completeness.
+N    */
+N#ifdef __USE_ANSI_EXAMPLE_RAND
+S#define srand _ANSI_srand
+S#define rand _ANSI_rand
+S#define RAND_MAX 0x7fff
+N#else
+N#define RAND_MAX 0x7fffffff
+N#endif
+N   /*
+N    * RAND_MAX: an integral constant expression, the value of which
+N    * is the maximum value returned by the rand function.
+N    */
+Nextern _ARMABI int __aeabi_MB_CUR_MAX(void);
+Xextern __declspec(__nothrow) int __aeabi_MB_CUR_MAX(void);
+N#define MB_CUR_MAX ( __aeabi_MB_CUR_MAX() )
+N   /*
+N    * a positive integer expression whose value is the maximum number of bytes
+N    * in a multibyte character for the extended character set specified by the
+N    * current locale (category LC_CTYPE), and whose value is never greater
+N    * than MB_LEN_MAX.
+N    */
+N
+N   /*
+N    * If the compiler supports signalling nans as per N965 then it
+N    * will define __SUPPORT_SNAN__, in which case a user may define
+N    * _WANT_SNAN in order to obtain a compliant version of the strtod
+N    * family of functions.
+N    */
+N#if defined(__SUPPORT_SNAN__) && defined(_WANT_SNAN)
+X#if 0L && 0L
+S#pragma import(__use_snan)
+N#endif
+N
+Nextern _ARMABI double atof(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) double atof(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to double
+N    * representation.
+N    * Returns: the converted value.
+N    */
+Nextern _ARMABI int atoi(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) int atoi(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to int
+N    * representation.
+N    * Returns: the converted value.
+N    */
+Nextern _ARMABI long int atol(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) long int atol(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to long int
+N    * representation.
+N    * Returns: the converted value.
+N    */
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Nextern _ARMABI __LONGLONG atoll(const char * /*nptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) long long atoll(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to
+N    * long long int representation.
+N    * Returns: the converted value.
+N    */
+N#endif
+N
+Nextern _ARMABI double strtod(const char * __restrict /*nptr*/, char ** __restrict /*endptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) double strtod(const char * __restrict  , char ** __restrict  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to double
+N    * representation. First it decomposes the input string into three parts:
+N    * an initial, possibly empty, sequence of white-space characters (as
+N    * specified by the isspace function), a subject sequence resembling a
+N    * floating point constant; and a final string of one or more unrecognised
+N    * characters, including the terminating null character of the input string.
+N    * Then it attempts to convert the subject sequence to a floating point
+N    * number, and returns the result. A pointer to the final string is stored
+N    * in the object pointed to by endptr, provided that endptr is not a null
+N    * pointer.
+N    * Returns: the converted value if any. If no conversion could be performed,
+N    *          zero is returned. If the correct value is outside the range of
+N    *          representable values, plus or minus HUGE_VAL is returned
+N    *          (according to the sign of the value), and the value of the macro
+N    *          ERANGE is stored in errno. If the correct value would cause
+N    *          underflow, zero is returned and the value of the macro ERANGE is
+N    *          stored in errno.
+N    */
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Nextern _ARMABI float strtof(const char * __restrict /*nptr*/, char ** __restrict /*endptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) float strtof(const char * __restrict  , char ** __restrict  ) __attribute__((__nonnull__(1)));
+Nextern _ARMABI long double strtold(const char * __restrict /*nptr*/, char ** __restrict /*endptr*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) long double strtold(const char * __restrict  , char ** __restrict  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * same as strtod, but return float and long double respectively.
+N    */
+N#endif
+Nextern _ARMABI long int strtol(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) long int strtol(const char * __restrict  ,
+N                        char ** __restrict /*endptr*/, int /*base*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to long int
+N    * representation. First it decomposes the input string into three parts:
+N    * an initial, possibly empty, sequence of white-space characters (as
+N    * specified by the isspace function), a subject sequence resembling an
+N    * integer represented in some radix determined by the value of base, and a
+N    * final string of one or more unrecognised characters, including the
+N    * terminating null character of the input string. Then it attempts to
+N    * convert the subject sequence to an integer, and returns the result.
+N    * If the value of base is 0, the expected form of the subject sequence is
+N    * that of an integer constant (described in ANSI Draft, section 3.1.3.2),
+N    * optionally preceded by a '+' or '-' sign, but not including an integer
+N    * suffix. If the value of base is between 2 and 36, the expected form of
+N    * the subject sequence is a sequence of letters and digits representing an
+N    * integer with the radix specified by base, optionally preceded by a plus
+N    * or minus sign, but not including an integer suffix. The letters from a
+N    * (or A) through z (or Z) are ascribed the values 10 to 35; only letters
+N    * whose ascribed values are less than that of the base are permitted. If
+N    * the value of base is 16, the characters 0x or 0X may optionally precede
+N    * the sequence of letters and digits following the sign if present.
+N    * A pointer to the final string is stored in the object
+N    * pointed to by endptr, provided that endptr is not a null pointer.
+N    * Returns: the converted value if any. If no conversion could be performed,
+N    *          zero is returned and nptr is stored in *endptr.
+N    *          If the correct value is outside the range of
+N    *          representable values, LONG_MAX or LONG_MIN is returned
+N    *          (according to the sign of the value), and the value of the
+N    *          macro ERANGE is stored in errno.
+N    */
+Nextern _ARMABI unsigned long int strtoul(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) unsigned long int strtoul(const char * __restrict  ,
+N                                       char ** __restrict /*endptr*/, int /*base*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * converts the initial part of the string pointed to by nptr to unsigned
+N    * long int representation. First it decomposes the input string into three
+N    * parts: an initial, possibly empty, sequence of white-space characters (as
+N    * determined by the isspace function), a subject sequence resembling an
+N    * unsigned integer represented in some radix determined by the value of
+N    * base, and a final string of one or more unrecognised characters,
+N    * including the terminating null character of the input string. Then it
+N    * attempts to convert the subject sequence to an unsigned integer, and
+N    * returns the result. If the value of base is zero, the expected form of
+N    * the subject sequence is that of an integer constant (described in ANSI
+N    * Draft, section 3.1.3.2), optionally preceded by a '+' or '-' sign, but
+N    * not including an integer suffix. If the value of base is between 2 and
+N    * 36, the expected form of the subject sequence is a sequence of letters
+N    * and digits representing an integer with the radix specified by base,
+N    * optionally preceded by a '+' or '-' sign, but not including an integer
+N    * suffix. The letters from a (or A) through z (or Z) stand for the values
+N    * 10 to 35; only letters whose ascribed values are less than that of the
+N    * base are permitted. If the value of base is 16, the characters 0x or 0X
+N    * may optionally precede the sequence of letters and digits following the
+N    * sign, if present. A pointer to the final string is stored in the object
+N    * pointed to by endptr, provided that endptr is not a null pointer.
+N    * Returns: the converted value if any. If no conversion could be performed,
+N    *          zero is returned and nptr is stored in *endptr.
+N    *          If the correct value is outside the range of
+N    *          representable values, ULONG_MAX is returned, and the value of
+N    *          the macro ERANGE is stored in errno.
+N    */
+N
+N/* C90 reserves all names beginning with 'str' */
+Nextern _ARMABI __LONGLONG strtoll(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) long long strtoll(const char * __restrict  ,
+N                                  char ** __restrict /*endptr*/, int /*base*/)
+N                          __attribute__((__nonnull__(1)));
+N   /*
+N    * as strtol but returns a long long int value.  If the correct value is
+N    * outside the range of representable values,  LLONG_MAX or LLONG_MIN is
+N    * returned (according to the sign of the value), and the value of the
+N    * macro ERANGE is stored in errno.
+N    */
+Nextern _ARMABI unsigned __LONGLONG strtoull(const char * __restrict /*nptr*/,
+Xextern __declspec(__nothrow) unsigned long long strtoull(const char * __restrict  ,
+N                                            char ** __restrict /*endptr*/, int /*base*/)
+N                                   __attribute__((__nonnull__(1)));
+N   /*
+N    * as strtoul but returns an unsigned long long int value.  If the correct
+N    * value is outside the range of representable values, ULLONG_MAX is returned,
+N    * and the value of the macro ERANGE is stored in errno.
+N    */
+N
+Nextern _ARMABI int rand(void);
+Xextern __declspec(__nothrow) int rand(void);
+N   /*
+N    * Computes a sequence of pseudo-random integers in the range 0 to RAND_MAX.
+N    * Uses an additive generator (Mitchell & Moore) of the form:
+N    *   Xn = (X[n-24] + X[n-55]) MOD 2^31
+N    * This is described in section 3.2.2 of Knuth, vol 2. It's period is
+N    * in excess of 2^55 and its randomness properties, though unproven, are
+N    * conjectured to be good. Empirical testing since 1958 has shown no flaws.
+N    * Returns: a pseudo-random integer.
+N    */
+Nextern _ARMABI void srand(unsigned int /*seed*/);
+Xextern __declspec(__nothrow) void srand(unsigned int  );
+N   /*
+N    * uses its argument as a seed for a new sequence of pseudo-random numbers
+N    * to be returned by subsequent calls to rand. If srand is then called with
+N    * the same seed value, the sequence of pseudo-random numbers is repeated.
+N    * If rand is called before any calls to srand have been made, the same
+N    * sequence is generated as when srand is first called with a seed value
+N    * of 1.
+N    */
+N
+Nstruct _rand_state { int __x[57]; };
+Nextern _ARMABI int _rand_r(struct _rand_state *);
+Xextern __declspec(__nothrow) int _rand_r(struct _rand_state *);
+Nextern _ARMABI void _srand_r(struct _rand_state *, unsigned int);
+Xextern __declspec(__nothrow) void _srand_r(struct _rand_state *, unsigned int);
+Nstruct _ANSI_rand_state { int __x[1]; };
+Nextern _ARMABI int _ANSI_rand_r(struct _ANSI_rand_state *);
+Xextern __declspec(__nothrow) int _ANSI_rand_r(struct _ANSI_rand_state *);
+Nextern _ARMABI void _ANSI_srand_r(struct _ANSI_rand_state *, unsigned int);
+Xextern __declspec(__nothrow) void _ANSI_srand_r(struct _ANSI_rand_state *, unsigned int);
+N   /*
+N    * Re-entrant variants of both flavours of rand, which operate on
+N    * an explicitly supplied state buffer.
+N    */
+N
+Nextern _ARMABI void *calloc(size_t /*nmemb*/, size_t /*size*/);
+Xextern __declspec(__nothrow) void *calloc(size_t  , size_t  );
+N   /*
+N    * allocates space for an array of nmemb objects, each of whose size is
+N    * 'size'. The space is initialised to all bits zero.
+N    * Returns: either a null pointer or a pointer to the allocated space.
+N    */
+Nextern _ARMABI void free(void * /*ptr*/);
+Xextern __declspec(__nothrow) void free(void *  );
+N   /*
+N    * causes the space pointed to by ptr to be deallocated (i.e., made
+N    * available for further allocation). If ptr is a null pointer, no action
+N    * occurs. Otherwise, if ptr does not match a pointer earlier returned by
+N    * calloc, malloc or realloc or if the space has been deallocated by a call
+N    * to free or realloc, the behaviour is undefined.
+N    */
+Nextern _ARMABI void *malloc(size_t /*size*/);
+Xextern __declspec(__nothrow) void *malloc(size_t  );
+N   /*
+N    * allocates space for an object whose size is specified by 'size' and whose
+N    * value is indeterminate.
+N    * Returns: either a null pointer or a pointer to the allocated space.
+N    */
+Nextern _ARMABI void *realloc(void * /*ptr*/, size_t /*size*/);
+Xextern __declspec(__nothrow) void *realloc(void *  , size_t  );
+N   /*
+N    * changes the size of the object pointed to by ptr to the size specified by
+N    * size. The contents of the object shall be unchanged up to the lesser of
+N    * the new and old sizes. If the new size is larger, the value of the newly
+N    * allocated portion of the object is indeterminate. If ptr is a null
+N    * pointer, the realloc function behaves like a call to malloc for the
+N    * specified size. Otherwise, if ptr does not match a pointer earlier
+N    * returned by calloc, malloc or realloc, or if the space has been
+N    * deallocated by a call to free or realloc, the behaviour is undefined.
+N    * If the space cannot be allocated, the object pointed to by ptr is
+N    * unchanged. If size is zero and ptr is not a null pointer, the object it
+N    * points to is freed.
+N    * Returns: either a null pointer or a pointer to the possibly moved
+N    *          allocated space.
+N    */
+N#if !defined(__STRICT_ANSI__)
+X#if !0L
+Nextern _ARMABI int posix_memalign(void ** /*ret*/, size_t /*alignment*/, size_t /*size*/);
+Xextern __declspec(__nothrow) int posix_memalign(void **  , size_t  , size_t  );
+N   /*
+N    * allocates space for an object of size 'size', aligned to a
+N    * multiple of 'alignment' (which must be a power of two and at
+N    * least 4).
+N    *
+N    * On success, a pointer to the allocated object is stored in
+N    * *ret, and zero is returned. On failure, the return value is
+N    * either ENOMEM (allocation failed because no suitable piece of
+N    * memory was available) or EINVAL (the 'alignment' parameter was
+N    * invalid).
+N    */
+N#endif
+Ntypedef int (*__heapprt)(void *, char const *, ...);
+Nextern _ARMABI void __heapstats(int (* /*dprint*/)(void * /*param*/,
+Xextern __declspec(__nothrow) void __heapstats(int (*  )(void *  ,
+N                                           char const * /*format*/, ...),
+N                        void * /*param*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * reports current heap statistics (eg. number of free blocks in
+N    * the free-list). Output is as implementation-defined free-form
+N    * text, provided via the dprint function. `param' gives an
+N    * extra data word to pass to dprint. You can call
+N    * __heapstats(fprintf,stdout) by casting fprintf to the above
+N    * function type; the typedef `__heapprt' is provided for this
+N    * purpose.
+N    *
+N    * `dprint' will not be called while the heap is being examined,
+N    * so it can allocate memory itself without trouble.
+N    */
+Nextern _ARMABI int __heapvalid(int (* /*dprint*/)(void * /*param*/,
+Xextern __declspec(__nothrow) int __heapvalid(int (*  )(void *  ,
+N                                           char const * /*format*/, ...),
+N                       void * /*param*/, int /*verbose*/) __attribute__((__nonnull__(1)));
+N   /*
+N    * performs a consistency check on the heap. Errors are reported
+N    * through dprint, like __heapstats. If `verbose' is nonzero,
+N    * full diagnostic information on the heap state is printed out.
+N    *
+N    * This routine probably won't work if the heap isn't a
+N    * contiguous chunk (for example, if __user_heap_extend has been
+N    * overridden).
+N    *
+N    * `dprint' may be called while the heap is being examined or
+N    * even in an invalid state, so it must perform no memory
+N    * allocation. In particular, if `dprint' calls (or is) a stdio
+N    * function, the stream it outputs to must already have either
+N    * been written to or been setvbuf'ed, or else the system will
+N    * allocate buffer space for it on the first call to dprint.
+N    */
+Nextern _ARMABI_NORETURN void abort(void);
+Xextern __declspec(__nothrow) __declspec(__noreturn) void abort(void);
+N   /*
+N    * causes abnormal program termination to occur, unless the signal SIGABRT
+N    * is being caught and the signal handler does not return. Whether open
+N    * output streams are flushed or open streams are closed or temporary
+N    * files removed is implementation-defined.
+N    * An implementation-defined form of the status 'unsuccessful termination'
+N    * is returned to the host environment by means of a call to
+N    * raise(SIGABRT).
+N    */
+N
+Nextern _ARMABI int atexit(void (* /*func*/)(void)) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) int atexit(void (*  )(void)) __attribute__((__nonnull__(1)));
+N   /*
+N    * registers the function pointed to by func, to be called without its
+N    * arguments at normal program termination. It is possible to register at
+N    * least 32 functions.
+N    * Returns: zero if the registration succeeds, nonzero if it fails.
+N    */
+N#if defined(__EDG__) && !defined(__GNUC__)
+X#if 1L && !0L
+N#define __LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE
+N#endif
+N#if defined(__cplusplus) && defined(__LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE) 
+X#if 0L && 1L 
+S    /* atexit that takes a ptr to a function with C++ linkage 
+S     * but not in GNU mode  
+S     */
+S    typedef void (* __C_exitfuncptr)();
+S    extern "C++"
+S    inline int atexit(void (* __func)()) {
+S      return atexit((__C_exitfuncptr)__func);
+S    }
+N#endif
+N
+N
+Nextern _ARMABI_NORETURN void exit(int /*status*/);
+Xextern __declspec(__nothrow) __declspec(__noreturn) void exit(int  );
+N   /*
+N    * causes normal program termination to occur. If more than one call to the
+N    * exit function is executed by a program, the behaviour is undefined.
+N    * First, all functions registered by the atexit function are called, in the
+N    * reverse order of their registration.
+N    * Next, all open output streams are flushed, all open streams are closed,
+N    * and all files created by the tmpfile function are removed.
+N    * Finally, control is returned to the host environment. If the value of
+N    * status is zero or EXIT_SUCCESS, an implementation-defined form of the
+N    * status 'successful termination' is returned. If the value of status is
+N    * EXIT_FAILURE, an implementation-defined form of the status
+N    * 'unsuccessful termination' is returned. Otherwise the status returned
+N    * is implementation-defined.
+N    */
+N
+Nextern _ARMABI_NORETURN void _Exit(int /*status*/);
+Xextern __declspec(__nothrow) __declspec(__noreturn) void _Exit(int  );
+N   /*
+N    * causes normal program termination to occur. No functions registered
+N    * by the atexit function are called.
+N    * In this implementation, all open output streams are flushed, all
+N    * open streams are closed, and all files created by the tmpfile function
+N    * are removed.
+N    * Control is returned to the host environment. The status returned to
+N    * the host environment is determined in the same way as for 'exit'.
+N    */     
+N
+Nextern _ARMABI char *getenv(const char * /*name*/) __attribute__((__nonnull__(1)));
+Xextern __declspec(__nothrow) char *getenv(const char *  ) __attribute__((__nonnull__(1)));
+N   /*
+N    * searches the environment list, provided by the host environment, for a
+N    * string that matches the string pointed to by name. The set of environment
+N    * names and the method for altering the environment list are
+N    * implementation-defined.
+N    * Returns: a pointer to a string associated with the matched list member.
+N    *          The array pointed to shall not be modified by the program, but
+N    *          may be overwritten by a subsequent call to the getenv function.
+N    *          If the specified name cannot be found, a null pointer is
+N    *          returned.
+N    */
+N
+Nextern _ARMABI int  system(const char * /*string*/);
+Xextern __declspec(__nothrow) int  system(const char *  );
+N   /*
+N    * passes the string pointed to by string to the host environment to be
+N    * executed by a command processor in an implementation-defined manner.
+N    * A null pointer may be used for string, to inquire whether a command
+N    * processor exists.
+N    *
+N    * Returns: If the argument is a null pointer, the system function returns
+N    *          non-zero only if a command processor is available. If the
+N    *          argument is not a null pointer, the system function returns an
+N    *          implementation-defined value.
+N    */
+N
+Nextern _ARMABI_THROW void *bsearch(const void * /*key*/, const void * /*base*/,
+Xextern  void *bsearch(const void *  , const void *  ,
+N              size_t /*nmemb*/, size_t /*size*/,
+N              int (* /*compar*/)(const void *, const void *)) __attribute__((__nonnull__(1,2,5)));
+N   /*
+N    * searches an array of nmemb objects, the initial member of which is
+N    * pointed to by base, for a member that matches the object pointed to by
+N    * key. The size of each member of the array is specified by size.
+N    * The contents of the array shall be in ascending sorted order according to
+N    * a comparison function pointed to by compar, which is called with two
+N    * arguments that point to the key object and to an array member, in that
+N    * order. The function shall return an integer less than, equal to, or
+N    * greater than zero if the key object is considered, respectively, to be
+N    * less than, to match, or to be greater than the array member.
+N    * Returns: a pointer to a matching member of the array, or a null pointer
+N    *          if no match is found. If two members compare as equal, which
+N    *          member is matched is unspecified.
+N    */
+N#if defined(__cplusplus) && defined(__LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE)
+X#if 0L && 1L
+S    /* bsearch that takes a ptr to a function with C++ linkage 
+S     * but not in GNU mode
+S     */
+S    typedef int (* __C_compareprocptr)(const void *, const void *);
+S    extern "C++"
+S    void *bsearch(const void * __key, const void * __base,
+S              size_t __nmemb, size_t __size,
+S              int (* __compar)(const void *, const void *)) __attribute__((__nonnull__(1,2,5)));
+S    extern "C++"
+S    inline void *bsearch(const void * __key, const void * __base,
+S              size_t __nmemb, size_t __size,
+S              int (* __compar)(const void *, const void *)) {
+S      return bsearch(__key, __base, __nmemb, __size, (__C_compareprocptr)__compar);
+S    }
+N#endif
+N
+N
+Nextern _ARMABI_THROW void qsort(void * /*base*/, size_t /*nmemb*/, size_t /*size*/,
+Xextern  void qsort(void *  , size_t  , size_t  ,
+N           int (* /*compar*/)(const void *, const void *)) __attribute__((__nonnull__(1,4)));
+N   /*
+N    * sorts an array of nmemb objects, the initial member of which is pointed
+N    * to by base. The size of each object is specified by size.
+N    * The contents of the array shall be in ascending order according to a
+N    * comparison function pointed to by compar, which is called with two
+N    * arguments that point to the objects being compared. The function shall
+N    * return an integer less than, equal to, or greater than zero if the first
+N    * argument is considered to be respectively less than, equal to, or greater
+N    * than the second. If two members compare as equal, their order in the
+N    * sorted array is unspecified.
+N    */
+N
+N#if defined(__cplusplus) && defined(__LANGUAGE_LINKAGE_CHANGES_FUNCTION_TYPE)
+X#if 0L && 1L
+S    /* qsort that takes a ptr to a function with C++ linkage 
+S     * but not in GNU mode
+S     */    
+S    extern "C++"
+S    void qsort(void * __base, size_t __nmemb, size_t __size,
+S               int (* __compar)(const void *, const void *)) __attribute__((__nonnull__(1,4)));
+S    extern "C++"
+S    inline void qsort(void * __base, size_t __nmemb, size_t __size,
+S                      int (* __compar)(const void *, const void *)) {
+S      qsort(__base, __nmemb, __size, (__C_compareprocptr)__compar);
+S    }
+N#endif
+N
+Nextern _ARMABI_PURE int abs(int /*j*/);
+Xextern __declspec(__nothrow) __attribute__((const)) int abs(int  );
+N   /*
+N    * computes the absolute value of an integer j. If the result cannot be
+N    * represented, the behaviour is undefined.
+N    * Returns: the absolute value.
+N    */
+N
+Nextern _ARMABI_PURE div_t div(int /*numer*/, int /*denom*/);
+Xextern __declspec(__nothrow) __attribute__((const)) div_t div(int  , int  );
+N   /*
+N    * computes the quotient and remainder of the division of the numerator
+N    * numer by the denominator denom. If the division is inexact, the resulting
+N    * quotient is the integer of lesser magnitude that is the nearest to the
+N    * algebraic quotient. If the result cannot be represented, the behaviour is
+N    * undefined; otherwise, quot * denom + rem shall equal numer.
+N    * Returns: a structure of type div_t, comprising both the quotient and the
+N    *          remainder. the structure shall contain the following members,
+N    *          in either order.
+N    *          int quot; int rem;
+N    */
+Nextern _ARMABI_PURE long int labs(long int /*j*/);
+Xextern __declspec(__nothrow) __attribute__((const)) long int labs(long int  );
+N   /*
+N    * computes the absolute value of an long integer j. If the result cannot be
+N    * represented, the behaviour is undefined.
+N    * Returns: the absolute value.
+N    */
+N#ifdef __cplusplus
+S   extern "C++" inline _ARMABI_PURE long abs(long int x) { return labs(x); }
+N#endif
+N
+Nextern _ARMABI_PURE ldiv_t ldiv(long int /*numer*/, long int /*denom*/);
+Xextern __declspec(__nothrow) __attribute__((const)) ldiv_t ldiv(long int  , long int  );
+N   /*
+N    * computes the quotient and remainder of the division of the numerator
+N    * numer by the denominator denom. If the division is inexact, the sign of
+N    * the resulting quotient is that of the algebraic quotient, and the
+N    * magnitude of the resulting quotient is the largest integer less than the
+N    * magnitude of the algebraic quotient. If the result cannot be represented,
+N    * the behaviour is undefined; otherwise, quot * denom + rem shall equal
+N    * numer.
+N    * Returns: a structure of type ldiv_t, comprising both the quotient and the
+N    *          remainder. the structure shall contain the following members,
+N    *          in either order.
+N    *          long int quot; long int rem;
+N    */
+N#ifdef __cplusplus
+S   extern "C++" inline _ARMABI_PURE ldiv_t div(long int __numer, long int __denom) {
+S       return ldiv(__numer, __denom);
+S   }
+N#endif
+N
+N#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+X#if !0L || 1
+Nextern _ARMABI_PURE __LONGLONG llabs(__LONGLONG /*j*/);
+Xextern __declspec(__nothrow) __attribute__((const)) long long llabs(long long  );
+N   /*
+N    * computes the absolute value of a long long integer j. If the
+N    * result cannot be represented, the behaviour is undefined.
+N    * Returns: the absolute value.
+N    */
+N#ifdef __cplusplus
+S   extern "C++" inline _ARMABI_PURE __LONGLONG abs(__LONGLONG x) { return llabs(x); }
+N#endif
+N
+Nextern _ARMABI_PURE lldiv_t lldiv(__LONGLONG /*numer*/, __LONGLONG /*denom*/);
+Xextern __declspec(__nothrow) __attribute__((const)) lldiv_t lldiv(long long  , long long  );
+N   /*
+N    * computes the quotient and remainder of the division of the numerator
+N    * numer by the denominator denom. If the division is inexact, the sign of
+N    * the resulting quotient is that of the algebraic quotient, and the
+N    * magnitude of the resulting quotient is the largest integer less than the
+N    * magnitude of the algebraic quotient. If the result cannot be represented,
+N    * the behaviour is undefined; otherwise, quot * denom + rem shall equal
+N    * numer.
+N    * Returns: a structure of type lldiv_t, comprising both the quotient and the
+N    *          remainder. the structure shall contain the following members,
+N    *          in either order.
+N    *          long long quot; long long rem;
+N    */
+N#ifdef __cplusplus
+S   extern "C++" inline _ARMABI_PURE lldiv_t div(__LONGLONG __numer, __LONGLONG __denom) {
+S       return lldiv(__numer, __denom);
+S   }
+N#endif
+N#endif
+N
+N#if !(__ARM_NO_DEPRECATED_FUNCTIONS)
+N/*
+N * ARM real-time divide functions for guaranteed performance
+N */
+Ntypedef struct __sdiv32by16 { int quot, rem; } __sdiv32by16;
+Ntypedef struct __udiv32by16 { unsigned int quot, rem; } __udiv32by16;
+N   /* used int so that values return in separate regs, although 16-bit */
+Ntypedef struct __sdiv64by32 { int rem, quot; } __sdiv64by32;
+N
+N__value_in_regs extern _ARMABI_PURE __sdiv32by16 __rt_sdiv32by16(
+X__value_in_regs extern __declspec(__nothrow) __attribute__((const)) __sdiv32by16 __rt_sdiv32by16(
+N     int /*numer*/,
+N     short int /*denom*/);
+N   /*
+N    * Signed divide: (16-bit quot), (16-bit rem) = (32-bit) / (16-bit)
+N    */
+N__value_in_regs extern _ARMABI_PURE __udiv32by16 __rt_udiv32by16(
+X__value_in_regs extern __declspec(__nothrow) __attribute__((const)) __udiv32by16 __rt_udiv32by16(
+N     unsigned int /*numer*/,
+N     unsigned short /*denom*/);
+N   /*
+N    * Unsigned divide: (16-bit quot), (16-bit rem) = (32-bit) / (16-bit)
+N    */
+N__value_in_regs extern _ARMABI_PURE __sdiv64by32 __rt_sdiv64by32(
+X__value_in_regs extern __declspec(__nothrow) __attribute__((const)) __sdiv64by32 __rt_sdiv64by32(
+N     int /*numer_h*/, unsigned int /*numer_l*/,
+N     int /*denom*/);
+N   /*
+N    * Signed divide: (32-bit quot), (32-bit rem) = (64-bit) / (32-bit)
+N    */
+N#endif
+N
+N/*
+N * ARM floating-point mask/status function (for both hardfp and softfp)
+N */
+Nextern _ARMABI unsigned int __fp_status(unsigned int /*mask*/, unsigned int /*flags*/);
+Xextern __declspec(__nothrow) unsigned int __fp_status(unsigned int  , unsigned int  );
+N   /*
+N    * mask and flags are bit-fields which correspond directly to the
+N    * floating point status register in the FPE/FPA and fplib.  
+N    * __fp_status returns the current value of the status register,
+N    * and also sets the writable bits of the word
+N    * (the exception control and flag bytes) to:
+N    *
+N    *     new = (old & ~mask) ^ flags;
+N    */
+N#define __fpsr_IXE  0x100000
+N#define __fpsr_UFE  0x80000
+N#define __fpsr_OFE  0x40000
+N#define __fpsr_DZE  0x20000
+N#define __fpsr_IOE  0x10000
+N
+N#define __fpsr_IXC  0x10
+N#define __fpsr_UFC  0x8
+N#define __fpsr_OFC  0x4
+N#define __fpsr_DZC  0x2
+N#define __fpsr_IOC  0x1
+N
+N/*
+N * Multibyte Character Functions.
+N * The behaviour of the multibyte character functions is affected by the
+N * LC_CTYPE category of the current locale. For a state-dependent encoding,
+N * each function is placed into its initial state by a call for which its
+N * character pointer argument, s, is a null pointer. Subsequent calls with s
+N * as other than a null pointer cause the internal state of the function to be
+N * altered as necessary. A call with s as a null pointer causes these functions
+N * to return a nonzero value if encodings have state dependency, and a zero
+N * otherwise. After the LC_CTYPE category is changed, the shift state of these
+N * functions is indeterminate.
+N */
+Nextern _ARMABI int mblen(const char * /*s*/, size_t /*n*/);
+Xextern __declspec(__nothrow) int mblen(const char *  , size_t  );
+N   /*
+N    * If s is not a null pointer, the mblen function determines the number of
+N    * bytes compromising the multibyte character pointed to by s. Except that
+N    * the shift state of the mbtowc function is not affected, it is equivalent
+N    * to   mbtowc((wchar_t *)0, s, n);
+N    * Returns: If s is a null pointer, the mblen function returns a nonzero or
+N    *          zero value, if multibyte character encodings, respectively, do
+N    *          or do not have state-dependent encodings. If s is not a null
+N    *          pointer, the mblen function either returns a 0 (if s points to a
+N    *          null character), or returns the number of bytes that compromise
+N    *          the multibyte character (if the next n of fewer bytes form a
+N    *          valid multibyte character), or returns -1 (they do not form a
+N    *          valid multibyte character).
+N    */
+Nextern _ARMABI int mbtowc(wchar_t * __restrict /*pwc*/,
+Xextern __declspec(__nothrow) int mbtowc(wchar_t * __restrict  ,
+N                   const char * __restrict /*s*/, size_t /*n*/);
+N   /*
+N    * If s is not a null pointer, the mbtowc function determines the number of
+N    * bytes that compromise the multibyte character pointed to by s. It then
+N    * determines the code for value of type wchar_t that corresponds to that
+N    * multibyte character. (The value of the code corresponding to the null
+N    * character is zero). If the multibyte character is valid and pwc is not a
+N    * null pointer, the mbtowc function stores the code in the object pointed
+N    * to by pwc. At most n bytes of the array pointed to by s will be examined.
+N    * Returns: If s is a null pointer, the mbtowc function returns a nonzero or
+N    *          zero value, if multibyte character encodings, respectively, do
+N    *          or do not have state-dependent encodings. If s is not a null
+N    *          pointer, the mbtowc function either returns a 0 (if s points to
+N    *          a null character), or returns the number of bytes that
+N    *          compromise the converted multibyte character (if the next n of
+N    *          fewer bytes form a valid multibyte character), or returns -1
+N    *          (they do not form a valid multibyte character).
+N    */
+Nextern _ARMABI int wctomb(char * /*s*/, wchar_t /*wchar*/);
+Xextern __declspec(__nothrow) int wctomb(char *  , wchar_t  );
+N   /*
+N    * determines the number of bytes need to represent the multibyte character
+N    * corresponding to the code whose value is wchar (including any change in
+N    * shift state). It stores the multibyte character representation in the
+N    * array object pointed to by s (if s is not a null pointer). At most
+N    * MB_CUR_MAX characters are stored. If the value of wchar is zero, the
+N    * wctomb function is left in the initial shift state).
+N    * Returns: If s is a null pointer, the wctomb function returns a nonzero or
+N    *          zero value, if multibyte character encodings, respectively, do
+N    *          or do not have state-dependent encodings. If s is not a null
+N    *          pointer, the wctomb function returns a -1 if the value of wchar
+N    *          does not correspond to a valid multibyte character, or returns
+N    *          the number of bytes that compromise the multibyte character
+N    *          corresponding to the value of wchar.
+N    */
+N
+N/*
+N * Multibyte String Functions.
+N * The behaviour of the multibyte string functions is affected by the LC_CTYPE
+N * category of the current locale.
+N */
+Nextern _ARMABI size_t mbstowcs(wchar_t * __restrict /*pwcs*/,
+Xextern __declspec(__nothrow) size_t mbstowcs(wchar_t * __restrict  ,
+N                      const char * __restrict /*s*/, size_t /*n*/) __attribute__((__nonnull__(2)));
+N   /*
+N    * converts a sequence of multibyte character that begins in the initial
+N    * shift state from the array pointed to by s into a sequence of
+N    * corresponding codes and stores not more than n codes into the array
+N    * pointed to by pwcs. No multibyte character that follow a null character
+N    * (which is converted into a code with value zero) will be examined or
+N    * converted. Each multibyte character is converted as if by a call to
+N    * mbtowc function, except that the shift state of the mbtowc function is
+N    * not affected. No more than n elements will be modified in the array
+N    * pointed to by pwcs. If copying takes place between objects that overlap,
+N    * the behaviour is undefined.
+N    * Returns: If an invalid multibyte character is encountered, the mbstowcs
+N    *          function returns (size_t)-1. Otherwise, the mbstowcs function
+N    *          returns the number of array elements modified, not including
+N    *          a terminating zero code, if any.
+N    */
+Nextern _ARMABI size_t wcstombs(char * __restrict /*s*/,
+Xextern __declspec(__nothrow) size_t wcstombs(char * __restrict  ,
+N                      const wchar_t * __restrict /*pwcs*/, size_t /*n*/) __attribute__((__nonnull__(2)));
+N   /*
+N    * converts a sequence of codes that correspond to multibyte characters
+N    * from the array pointed to by pwcs into a sequence of multibyte
+N    * characters that begins in the initial shift state and stores these
+N    * multibyte characters into the array pointed to by s, stopping if a
+N    * multibyte character would exceed the limit of n total bytes or if a
+N    * null character is stored. Each code is converted as if by a call to the
+N    * wctomb function, except that the shift state of the wctomb function is
+N    * not affected. No more than n elements will be modified in the array
+N    * pointed to by s. If copying takes place between objects that overlap,
+N    * the behaviour is undefined.
+N    * Returns: If a code is encountered that does not correspond to a valid
+N    *          multibyte character, the wcstombs function returns (size_t)-1.
+N    *          Otherwise, the wcstombs function returns the number of bytes
+N    *          modified, not including a terminating null character, if any.
+N    */
+N
+Nextern _ARMABI void __use_realtime_heap(void);
+Xextern __declspec(__nothrow) void __use_realtime_heap(void);
+Nextern _ARMABI void __use_realtime_division(void);
+Xextern __declspec(__nothrow) void __use_realtime_division(void);
+Nextern _ARMABI void __use_two_region_memory(void);
+Xextern __declspec(__nothrow) void __use_two_region_memory(void);
+Nextern _ARMABI void __use_no_heap(void);
+Xextern __declspec(__nothrow) void __use_no_heap(void);
+Nextern _ARMABI void __use_no_heap_region(void);
+Xextern __declspec(__nothrow) void __use_no_heap_region(void);
+N
+Nextern _ARMABI char const *__C_library_version_string(void);
+Xextern __declspec(__nothrow) char const *__C_library_version_string(void);
+Nextern _ARMABI int __C_library_version_number(void);
+Xextern __declspec(__nothrow) int __C_library_version_number(void);
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDLIB_DECLS */
+N
+N  #if _AEABI_PORTABILITY_LEVEL != 0 && !defined _AEABI_PORTABLE
+X  #if _AEABI_PORTABILITY_LEVEL != 0 && !0L
+S    #define _AEABI_PORTABLE
+N  #endif
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDLIB_NO_EXPORTS
+S      #if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+S        using ::std::atoll;
+S        using ::std::lldiv_t;
+S      #endif /* !defined(__STRICT_ANSI__) || __USE_C99_STDLIB */
+S      using ::std::div_t;
+S      using ::std::ldiv_t;
+S      using ::std::atof;
+S      using ::std::atoi;
+S      using ::std::atol;
+S      using ::std::strtod;
+S#if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+S      using ::std::strtof;
+S      using ::std::strtold;
+S#endif
+S      using ::std::strtol;
+S      using ::std::strtoul;
+S      using ::std::strtoll;
+S      using ::std::strtoull;
+S      using ::std::rand;
+S      using ::std::srand;
+S      using ::std::_rand_state;
+S      using ::std::_rand_r;
+S      using ::std::_srand_r;
+S      using ::std::_ANSI_rand_state;
+S      using ::std::_ANSI_rand_r;
+S      using ::std::_ANSI_srand_r;
+S      using ::std::calloc;
+S      using ::std::free;
+S      using ::std::malloc;
+S      using ::std::realloc;
+S#if !defined(__STRICT_ANSI__)
+S      using ::std::posix_memalign;
+S#endif
+S      using ::std::__heapprt;
+S      using ::std::__heapstats;
+S      using ::std::__heapvalid;
+S      using ::std::abort;
+S      using ::std::atexit;
+S      using ::std::exit;
+S      using ::std::_Exit;
+S      using ::std::getenv;
+S      using ::std::system;
+S      using ::std::bsearch;
+S      using ::std::qsort;
+S      using ::std::abs;
+S      using ::std::div;
+S      using ::std::labs;
+S      using ::std::ldiv;
+S      #if !defined(__STRICT_ANSI__) || __USE_C99_STDLIB
+S        using ::std::llabs;
+S        using ::std::lldiv;
+S      #endif /* !defined(__STRICT_ANSI__) || __USE_C99_STDLIB */
+S#if !(__ARM_NO_DEPRECATED_FUNCTIONS)
+S      using ::std::__sdiv32by16;
+S      using ::std::__udiv32by16;
+S      using ::std::__sdiv64by32;
+S      using ::std::__rt_sdiv32by16;
+S      using ::std::__rt_udiv32by16;
+S      using ::std::__rt_sdiv64by32;
+S#endif
+S      using ::std::__fp_status;
+S      using ::std::mblen;
+S      using ::std::mbtowc;
+S      using ::std::wctomb;
+S      using ::std::mbstowcs;
+S      using ::std::wcstombs;
+S      using ::std::__use_realtime_heap;
+S      using ::std::__use_realtime_division;
+S      using ::std::__use_two_region_memory;
+S      using ::std::__use_no_heap;
+S      using ::std::__use_no_heap_region;
+S      using ::std::__C_library_version_string;
+S      using ::std::__C_library_version_number;
+S      using ::std::size_t;
+S      using ::std::__aeabi_MB_CUR_MAX;
+S    #endif /* __STDLIB_NO_EXPORTS */
+N  #endif /* __cplusplus */
+N
+N#undef __LONGLONG
+N
+N#endif /* __stdlib_h */
+N
+N/* end of stdlib.h */
+L 8 ".\SRC\eGFX\eGFX.h" 2
+N
+N#include "eGFX_DataTypes.h"
+L 1 ".\SRC\eGFX\eGFX_DataTypes.h" 1
+N#include "stdint.h"
+N
+N
+N#ifndef eGFX_DATA_TYPES_H
+N#define eGFX_DATA_TYPES_H
+N
+N
+Ntypedef int16_t FIXED_7_8;
+Ntypedef int16_t FIXED_9_6;
+N
+Ntypedef int16_t FIXED_0_15;
+Ntypedef int16_t FIXED_1_14;
+N
+N
+N#define eGFX_IMAGE_PLANE_1BPP		 0
+N#define eGFX_IMAGE_PLANE_3BPP_RGB    	 1
+N#define eGFX_IMAGE_PLANE_4BPP		    2
+N#define eGFX_IMAGE_PLANE_8BPP		   3
+N#define eGFX_IMAGE_PLANE_16BPP_565    4
+N#define eGFX_IMAGE_PLANE_24BPP        5
+N#define eGFX_IMAGE_PLANE_32BPP        6
+N
+N
+N
+Ntypedef struct
+N{
+N    uint8_t Type;
+N    uint8_t *Data;
+N    uint16_t SizeX;
+N    uint16_t SizeY;
+N
+N} eGFX_ImagePlane;
+N
+Ntypedef struct
+N{
+N    int16_t X;
+N    int16_t Y;
+N} eGFX_Point;
+N
+Ntypedef struct
+N{
+N    float X; 	
+N    float Y;  
+N} eGFX_PointF;
+N
+Ntypedef struct
+N{
+N    eGFX_Point P1;
+N    eGFX_Point P2;
+N} eGFX_Box;
+N
+Ntypedef struct
+N{
+N    eGFX_Point Center;
+N    uint8_t NumPoints;
+N    uint8_t DrawMode;
+N    const eGFX_Point *PointList;
+N
+N} eGFX_ListPrimitive;
+N
+N
+N
+N#define eGFX_LIST_PRIMITIVE_CONNECTED                              0x01
+N#define eGFX_LIST_PRIMITIVE_DISCONNECTED                           0x02
+N#define eGFX_LIST_PRIMITIVE_CLOSED								   0x03
+N#define eGFX_LIST_PRIMITIVE_CONNECTED_YFLIPPED			 		   0x04
+N#define eGFX_LIST_PRIMITIVE_DISCONNECTED_YFLIPPED		   		   0x05
+N#define eGFX_LIST_PRIMITIVE_CLOSED_YFLIPPED			   			   0x06
+N
+Ntypedef struct
+N{
+N    const eGFX_ImagePlane *CharacterSprites[0x80-0x20];
+N  
+N	//Some TT Metrics
+N	int32_t Ascent; //Ascent scaled up by 65536 to store fractional value		(Q15.16)
+N	int32_t Descent; //Descent scaled up by 65536 to store fractional value		(Q15.16)
+N	int32_t LineSpacing; //Linespacing scaled up by 65536 to store fractional value  (Q15.16)
+N	
+N	uint8_t  SpacesPerTab;
+N    uint8_t  InterCharacterSpacing;
+N   
+N	uint8_t  Padding[2];
+N
+N} eGFX_Font;
+N
+N
+N#define eGFX_PIXEL_ON     0xFFFFFFFF
+N#define eGFX_PIXEL_OFF    0
+N
+Ntypedef uint32_t eGFX_PixelState;
+N
+N/***
+N*       ____  _     _           _
+N*      / __ \| |   (_)         | |
+N*     | |  | | |__  _  ___  ___| |_ ___
+N*     | |  | | '_ \| |/ _ \/ __| __/ __|
+N*     | |__| | |_) | |  __/ (__| |_\__ \
+N*      \____/|_.__/| |\___|\___|\__|___/
+X
+N*                 _/ |
+N*                |__/
+N*/
+N
+Ntypedef struct 
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	
+N}	eGFX_ObjectHeader;
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	uint32_t CurrentStep;
+N	uint32_t LastStep;
+N}	eGFX_AnimatorHeader;
+N
+N#define eGFX_OBJECT_STATE_ACTIVE							        	1
+N#define eGFX_OBJECT_STATE_ANIMATION_ACTIVE								2
+N#define eGFX_OBJECT_STATE_INACTIVE										0
+N
+N/***
+N*                     _                 _                ____  _     _           _
+N*         /\         (_)               | |              / __ \| |   (_)         | |
+N*        /  \   _ __  _ _ __ ___   __ _| |_ ___  _ __  | |  | | |__  _  ___  ___| |_ ___
+N*       / /\ \ | '_ \| | '_ ` _ \ / _` | __/ _ \| '__| | |  | | '_ \| |/ _ \/ __| __/ __|
+N*      / ____ \| | | | | | | | | | (_| | || (_) | |    | |__| | |_) | |  __/ (__| |_\__ \
+N*     /_/    \_\_| |_|_|_| |_| |_|\__,_|\__\___/|_|     \____/|_.__/| |\___|\___|\__|___/
+X
+N*                                                                  _/ |
+N*                                                                 |__/
+N*/
+N
+N
+N
+N#define eGFX_OBJECT_POINTF_BISECT_ANIMATOR								0xF0
+N#define eGFX_OBJECT_POINTF_LINEAR_ANIMATOR								0xF1
+N
+N#define eGFX_OBJECT_SCALARF_BISECT_ANIMATOR								0xF2
+N#define eGFX_OBJECT_SCALARF_LINEAR_ANIMATOR								0xF3
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	uint32_t CurrentStep;
+N	uint32_t LastStep;
+N	eGFX_PointF Target;
+N	eGFX_PointF *Current;
+N
+N	float FractionalBisect; //The amount of percentage of the distance the point should move each step. must between a number between zero and 1
+N
+N} eGFX_PointF_BisectAnimator;
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	uint32_t CurrentStep;
+N	uint32_t LastStep;
+N	eGFX_PointF Target;
+N	eGFX_PointF *Current;
+N	float IncrementX;
+N	float IncrementY;
+N
+N} eGFX_PointF_LinearAnimator;
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	uint32_t CurrentStep;
+N	uint32_t LastStep;
+N	float Target;
+N	float *Current;
+N	float Increment; //Increment we should make each step
+N
+N} eGFX_ScalarF_LinearAnimator;
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	uint32_t CurrentStep;
+N	uint32_t LastStep;
+N	float Target;
+N	float *Current;
+N	float FractionalBisect; //The amount of percentage of the distance the point should move each step. must between a number between zero and 1
+N
+N} eGFX_ScalarF_BisectAnimator;
+N
+N/***
+N*       _____                 _     _         ____  _     _           _
+N*      / ____|               | |   (_)       / __ \| |   (_)         | |
+N*     | |  __ _ __ __ _ _ __ | |__  _  ___  | |  | | |__  _  ___  ___| |_ ___
+N*     | | |_ | '__/ _` | '_ \| '_ \| |/ __| | |  | | '_ \| |/ _ \/ __| __/ __|
+N*     | |__| | | | (_| | |_) | | | | | (__  | |__| | |_) | |  __/ (__| |_\__ \
+N*      \_____|_|  \__,_| .__/|_| |_|_|\___|  \____/|_.__/| |\___|\___|\__|___/
+X
+N*                      | |                              _/ |
+N*                      |_|                             |__/
+N*/
+N
+N#define eGFX_OBJECT_TEXTF												0x0000
+N#define eGFX_OBJECT_SHADED_TEXTF										0x0001
+N#define eGFX_OBJECT_LINEF												0x0002
+N#define eGFX_OBJECT_SPRITEF												0x0003
+N#define eGFX_OBJECT_SCALED_SPRITEF										0x0004
+N#define eGFX_OBJECT_BOXF												0x0005
+N#define eGFX_OBJECT_CIRCLEF												0x0006
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	eGFX_PointF Position;
+N	char *String;
+N	eGFX_Font *Font;
+N	
+N} eGFX_Obj_TextF;
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	eGFX_PointF Position;
+N	char *String;
+N	eGFX_Font *Font;
+N	float Shading;
+N
+N} eGFX_Obj_ShadedTextF;
+N
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	eGFX_PointF Start;
+N	eGFX_PointF End;
+N	eGFX_PixelState PixelState; 
+N} eGFX_Obj_LineF;
+N
+N#define eGFX_CIRCLEF_RENDER_OPTION_OUTLINE	0x00
+N#define eGFX_CIRCLEF_RENDER_OPTION_FILLED	0x01
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	eGFX_PointF Position;
+N	float Radius;
+N	eGFX_PixelState PixelState; 
+N	uint8_t RenderOption;
+N} eGFX_Obj_CircleF;
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	eGFX_PointF Position;
+N	eGFX_ImagePlane * Sprite;
+N	
+N} eGFX_Obj_SpriteF;
+N
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N	
+N	eGFX_PointF Position;
+N	eGFX_ImagePlane * Sprite;
+N
+N	float Scale;
+N
+N} eGFX_Obj_ScaledSpriteF;
+N
+N
+N#define eGFX_BOXF_RENDER_OPTION_OUTLINE	0x00
+N#define eGFX_BOXF_RENDER_OPTION_FILLED	0x01
+N
+Ntypedef struct
+N{
+N	uint32_t Type;
+N	uint32_t State;
+N
+N	eGFX_PointF P1;
+N	eGFX_PointF P2;
+N
+N	eGFX_PixelState PixelState;
+N
+N	uint8_t BoxF_RenderOption;
+N
+N} eGFX_Obj_BoxF;
+N
+N
+N#endif
+L 10 ".\SRC\eGFX\eGFX.h" 2
+N
+N
+N#ifndef _eGFX_H__
+N#define _eGFX_H__
+N
+N#define eGFX_MAX_ANIMATORS										  32
+N#define eGFX_MAX_OBJECTS										  64
+N
+N#define eGFX_SPACES_PER_TAB                                        4
+N#define eGFX_MAX_STRING_LEN                                        64
+N#define eGFX_MAX_PRINTF_BUF_LENGTH                                 64
+N
+N#define eGFX_API_LEVEL											   1
+N#define eGFX_REVISION											   2
+N
+N
+N#define eGFX_CALCULATE_1BPP_BUFFER_ROW_BYTE_SIZE(x)			 ((x+7)>>3) //We add 8 to round up to the next even byte boundary
+N#define eGFX_CALCULATE_4BPP_BUFFER_ROW_BYTE_SIZE(x)			 ((x+1)>>1) //We add 1 to round up to the next even byte boundary
+N#define eGFX_CALCULATE_8BPP_BUFFER_ROW_BYTE_SIZE(x)			 (x)
+N#define eGFX_CALCULATE_16BPP_BUFFER_ROW_BYTE_SIZE(x)		 (x*2)
+N#define eGFX_CALCULATE_24BPP_BUFFER_ROW_BYTE_SIZE(x)	 	 (x*3)
+N#define	eGFX_CALCULATE_32BPP_BUFFER_ROW_BYTE_SIZE(x)	 	 (x*4)
+N
+N#define eGFX_CALCULATE_1BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (eGFX_CALCULATE_1BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+N#define eGFX_CALCULATE_3BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (((x * y * 3))/8) //This is a special type  for sharp 8 color memory LCDs.   Packing is done in the data buffer so the dump to the screen is simple
+N#define eGFX_CALCULATE_4BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (eGFX_CALCULATE_4BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+N#define eGFX_CALCULATE_8BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (eGFX_CALCULATE_8BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+N#define eGFX_CALCULATE_16BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)   (eGFX_CALCULATE_16BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+N#define eGFX_CALCULATE_24BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)   (eGFX_CALCULATE_24BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+N#define eGFX_CALCULATE_32BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)   (eGFX_CALCULATE_32BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+N
+N#define ROUND_TO_INT16_T(x)	((int16_t)(x + 0.5f))
+N
+Nextern const FIXED_1_14 eGFX_Fixed_1_14_SineTable [256];
+Nextern const FIXED_7_8 eGFX_Fixed_7_8_SineTable[256];
+N
+N#define eGFX_GET_INT_FROM_FIXED_7_8(A)				(int16_t)(A>>8)
+N#define eGFX_INT_TO_FIXED_7_8(A)					((FIXED_7_8)(A)<<8)
+N#define eGFX_GET_FRAC_FROM_FIXED_7_8(A)				(FIXED_7_8)(A&0xFF)
+N
+N#define eGFX_GET_INT_FROM_FIXED_9_6_(A)				(int16_t)(A>>6)
+N#define eGFX_INT_TO_FIXED_9_6(A)					((FIXED_9_6)(A)<<6)
+N#define eGFX_GET_FRAC_FROM_FIXED_6_9(A)				(FIXED_9_6)(A&0x3F)
+N
+NFIXED_7_8 eGFX_GET_INT_FROM_FIXED_7_8_ROUND_TO_NEAREST(FIXED_7_8 A);
+NFIXED_7_8 eGFX_FLOAT_TO_FIXED_7_8(float A);
+Nint16_t eGFX_FMul_15_0to0_15(int16_t A, int16_t B);
+Nint16_t eGFX_FMul_7_8to0_15(int16_t A, int16_t B);
+Nint16_t eGFX_FMul_15_0to7_8(int16_t A,int16_t B);
+Nint16_t eGFX_FMul_15_0to1_14(int16_t A,int16_t B);
+Nint16_t eGFX_ABS(int16_t A);
+N
+N
+N#define eGFX_RGB888_TO_RGB565(R,G,B)	 ( ((R>>2)<<11) | ((G>>2)<<5) | (B>>3))
+N
+N
+N#ifndef TRUE
+N	#define TRUE 1
+N#endif
+N
+N#ifndef FALSE
+N	#define FALSE 0
+N#endif
+N
+N
+N/***
+N *      _____ _          _    ____                       _   _
+N *     |  __ (_)        | |  / __ \                     | | (_)
+N *     | |__) |__  _____| | | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+N *     |  ___/ \ \/ / _ \ | | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+N *     | |   | |>  <  __/ | | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+N *     |_|   |_/_/\_\___|_|  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+N *                                 | |
+N *                                 |_|
+N */
+Nvoid eGFX_PutPixel(const eGFX_ImagePlane *Image,
+N                   int16_t x,
+N                   int16_t y,
+N                   eGFX_PixelState PS);
+N
+NeGFX_PixelState eGFX_GetPixel(const eGFX_ImagePlane *Image,
+N                         int16_t x,
+N                         int16_t y);
+N
+N
+N
+N
+N/***
+N *      _____      _           _ _   _              ____                       _   _
+N *     |  __ \    (_)         (_) | (_)            / __ \                     | | (_)
+N *     | |__) | __ _ _ __ ___  _| |_ ___   _____  | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+N *     |  ___/ '__| | '_ ` _ \| | __| \ \ / / _ \ | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+N *     | |   | |  | | | | | | | | |_| |\ V /  __/ | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+N *     |_|   |_|  |_|_| |_| |_|_|\__|_| \_/ \___|  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+N *                                                       | |
+N *                                                       |_|
+N */
+N
+N 
+Nvoid eGFX_DrawHline(eGFX_ImagePlane *Image,
+N                    int16_t XStart,
+N                    int16_t XStop,
+N                    int16_t Y,
+N                    eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawFilledBox(eGFX_ImagePlane *Image,
+N                        eGFX_Box *Box,
+N                        eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawBox(eGFX_ImagePlane *Image,
+N                  eGFX_Box *Box,
+N                  eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawVline(eGFX_ImagePlane *Image,
+N                    int16_t YStart,
+N                    int16_t YStop,
+N                    int16_t X,
+N                    eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawLine(eGFX_ImagePlane *Image,
+N                   int16_t X1,
+N                   int16_t Y1,
+N                   int16_t X2,
+N                   int16_t Y2,
+N                   eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawListPrimitive(eGFX_ImagePlane *Image,
+N                            eGFX_ListPrimitive *LP ,
+N                            eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawScaledListPrimitive(eGFX_ImagePlane *Image,
+N                                  eGFX_ListPrimitive *LP ,
+N                                  FIXED_7_8 Scale,
+N                                  eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawRotatedListPrimitive(eGFX_ImagePlane *Image,
+N                                   eGFX_ListPrimitive *LP ,
+N                                   uint8_t Angle,
+N                                   eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawScaledRotatedListPrimitive(eGFX_ImagePlane *Image,
+N        eGFX_ListPrimitive *LP ,
+N        uint8_t Angle,
+N        FIXED_7_8 Scale,
+N        eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawCircle(eGFX_ImagePlane *RC,
+N                     int16_t x0,
+N                     int16_t y0,
+N                     int16_t radius,
+N                     eGFX_PixelState PS);
+N
+Nvoid eGFX_DrawFilledCircle(eGFX_ImagePlane *RC,
+N	int16_t x0,
+N	int16_t y0,
+N	int16_t radius,
+N	eGFX_PixelState PS);
+N
+N
+N
+N/***
+N *       _____ _        _                ____                       _   _
+N *      / ____| |      (_)              / __ \                     | | (_)
+N *     | (___ | |_ _ __ _ _ __   __ _  | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+N *      \___ \| __| '__| | '_ \ / _` | | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+N *      ____) | |_| |  | | | | | (_| | | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+N *     |_____/ \__|_|  |_|_| |_|\__, |  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+N *                               __/ |        | |
+N *                              |___/         |_|
+N */
+N
+Nint16_t eGFX_ScaledDrawCharacter(eGFX_ImagePlane *Image,
+N                                 int16_t StartX,
+N                                 int16_t StartY,
+N                                 uint8_t Character,
+N                                 const eGFX_Font *MyFont,
+N                                 float ScaleFactor);
+N
+Nint16_t eGFX_DrawCharacter(eGFX_ImagePlane *Image,
+N                           int16_t StartX,
+N                           int16_t StartY,
+N                           uint8_t Character,
+N                           const eGFX_Font *MyFont);
+N
+Nint16_t eGFX_DrawCharacterFaded(eGFX_ImagePlane *Image,
+N                           int16_t StartX,
+N                           int16_t StartY,
+N                           uint8_t Character,
+N                           const eGFX_Font *MyFont,
+N                           eGFX_PixelState PS);
+N
+Nint16_t eGFX_DrawCharacterShaded(eGFX_ImagePlane *Image,
+N									int16_t StartX,
+N									int16_t StartY,
+N									uint8_t Character,
+N									const eGFX_Font *MyFont,
+N									float Shading);
+N
+N
+Nint16_t eGFX_GetStringWidth(char *String,
+N                            const eGFX_Font *MyFont);
+N
+Nint16_t eGFX_GetStringWidth_CustomSpacing(char *String,
+N											const eGFX_Font *MyFont,
+N											uint16_t Spacing);
+N
+N
+Nvoid eGFX_DrawHorizontalCenteredString(eGFX_ImagePlane *Image,
+N                                       int16_t StartY,
+N                                       char *String,
+N                                       const eGFX_Font *MyFont);
+N
+Nint16_t eGFX_DrawRightAlignedCenteredString_CustomSpacing(eGFX_ImagePlane *Image,
+N        int16_t StartY,
+N        char *String,
+N        const eGFX_Font *MyFont,
+N        uint16_t CustomCharacterSpacing,
+N        int16_t RightSideBuffer);
+N
+Nvoid eGFX_DrawHorizontalCenteredString_CustomSpacing(eGFX_ImagePlane *Image,
+N        int16_t StartY,
+N        char *String,
+N        const eGFX_Font *MyFont,
+N        uint16_t Spacing);
+N
+Nvoid eGFX_ScaledDrawString(eGFX_ImagePlane *Image,
+N                           int16_t StartX,
+N                           int16_t StartY,
+N                           char *String,
+N                           const eGFX_Font *MyFont,
+N                           float ScaleFactor);
+N
+Nint16_t  eGFX_DrawStringFaded(eGFX_ImagePlane *Image,
+N						 char *String,
+N                         int16_t StartX,
+N                         int16_t StartY,
+N                         const eGFX_Font *MyFont,
+N						eGFX_PixelState PS
+N                         );
+N
+N
+Nint16_t  eGFX_DrawStringShaded(eGFX_ImagePlane *Image,
+N								char *String,
+N								int16_t StartX,
+N								int16_t StartY,
+N								const eGFX_Font *MyFont,
+N								float Shading
+N								);
+N
+Nvoid eGFX_ScaledDrawString_CustomSpacing(eGFX_ImagePlane *Image,
+N        int16_t StartX,
+N        int16_t StartY,
+N        char *String,
+N        const eGFX_Font *MyFont,
+N        float ScaleFactor ,
+N        uint16_t Spacing);
+N
+Nint16_t  eGFX_DrawString(eGFX_ImagePlane *Image,
+N						char * String,
+N                         int16_t StartX,
+N                         int16_t StartY,
+N
+N                         const eGFX_Font *MyFont
+N                         );
+N
+Nint16_t  eGFX_printf(eGFX_ImagePlane *Image,
+N                     int16_t StartX,
+N                     int16_t StartY,
+N                     const eGFX_Font *MyFont,
+N                     
+N                     char *FormatString,...);
+N
+Nint16_t eGFX_DrawString_CustomSpacing(eGFX_ImagePlane *Image,
+N                                      int16_t StartX,
+N                                      int16_t StartY,
+N                                      char *String,
+N                                      const eGFX_Font *MyFont,uint16_t Spacing);
+N                                      
+Nint16_t  eGFX_printf_Colored(eGFX_ImagePlane *Image,
+N                     int16_t StartX,
+N                     int16_t StartY,
+N                     const eGFX_Font *MyFont,
+N											uint32_t Color,
+N                     char *FormatString,...);
+N
+Nint16_t  eGFX_printf_HorizontalCentered_Colored(eGFX_ImagePlane *Image,
+N                                         int16_t StartY,
+N                                        const eGFX_Font *MyFont,
+N                                        uint32_t Color,
+N                                        char *FormatString,...);
+N/***
+N*      _____  _                     ____                       _   _
+N*     |  __ \| |                   / __ \                     | | (_)
+N*     | |__) | | __ _ _ __   ___  | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+N*     |  ___/| |/ _` | '_ \ / _ \ | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+N*     | |    | | (_| | | | |  __/ | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+N*     |_|    |_|\__,_|_| |_|\___|  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+N*                                        | |
+N*                                        |_|
+N*/
+N
+Nvoid eGFX_Blit(eGFX_ImagePlane *Destination,
+N               int16_t x,
+N               int16_t y,
+N               const eGFX_ImagePlane *Sprite);
+N
+Nvoid eGFX_CenteredBlit(eGFX_ImagePlane *Destination,
+N			int16_t x,
+N			int16_t y,
+N			const eGFX_ImagePlane *Sprite);
+N
+Nvoid eGFX_BlitFaded(eGFX_ImagePlane *Destination,
+N               int16_t x,
+N               int16_t y,
+N               const eGFX_ImagePlane *Sprite,
+N               eGFX_PixelState PS);
+N
+Nvoid eGFX_BlitShaded(eGFX_ImagePlane *Destination,
+N					int16_t x,
+N					int16_t y,
+N					const eGFX_ImagePlane *Sprite,
+N					float Shading);
+N                    
+Nvoid eGFX_BlitColored(eGFX_ImagePlane *Destination,
+N                    int16_t x,
+N                    int16_t y,
+N                    const eGFX_ImagePlane *Sprite,
+N                    uint32_t Color);
+N
+Nvoid eGFX_ScaledBlit(eGFX_ImagePlane *Destination,
+N                     int16_t x,
+N                     int16_t y,
+N                     const eGFX_ImagePlane *Sprite,
+N                     float ScaleFactor);
+N
+Nuint8_t eGFX_GetBitFromArray(uint8_t *DataArray,uint16_t Bit);
+N
+N
+Nuint8_t eGFX_ImagePlane_GetByte(eGFX_ImagePlane   *Image,
+N                                uint16_t X,
+N                                uint16_t Y);
+N
+N
+Nvoid eGFX_ImagePlaneInit(eGFX_ImagePlane   *Image, uint8_t * Store, int16_t SizeX, int16_t SizeY, uint8_t Type);
+N
+Nvoid eGFX_ImagePlane_Clear(eGFX_ImagePlane   *Image);
+N
+N
+N
+N/***
+N*                     _                 _                        _____ _____
+N*         /\         (_)               | |                 /\   |  __ \_   _|
+N*        /  \   _ __  _ _ __ ___   __ _| |_ ___  _ __     /  \  | |__) || |
+N*       / /\ \ | '_ \| | '_ ` _ \ / _` | __/ _ \| '__|   / /\ \ |  ___/ | |
+N*      / ____ \| | | | | | | | | | (_| | || (_) | |     / ____ \| |    _| |_
+N*     /_/    \_\_| |_|_|_| |_| |_|\__,_|\__\___/|_|    /_/    \_\_|   |_____|
+N*
+N*
+N*/
+N
+N//Call this in the main loop.   Animators will be stepped at the rate that this is called!
+Nvoid eGFX_ProcessAnimators(void);
+N
+N//Adds an animator object to the list.  returns TRUE if successful.
+Nuint32_t eGFX_AddAnimator(void * Animator);
+N
+N//Clears all animators from the list
+Nvoid eGFX_ClearAnimators(void);
+N
+N//Gets the number of animator objects in the list
+Nuint32_t eGFX_GetAnimatorCount(void);
+N
+N//Returns True if the animator is complete
+Nuint32_t eGFX_AnimatorIsComplete(void * A);
+N
+N//returns TRUE if all of the animators are complete
+Nuint32_t eGFX_AnimatorsAreComplete(void);
+N
+N//Pauses all the animators (sets the state to inactive)
+Nvoid eGFX_PauseAnimators(void);
+N
+N//Starts all the Animators in the list.  (Sets the State to Active)
+Nvoid eGFX_StartAnimators(void);
+N
+N//Resets and Animator to step 0 and starts it again.
+Nvoid eGFX_ResetAnimator(void * A);
+N
+N//Resets and restarts all animators
+Nvoid eGFX_ResetAnimators(void);
+N
+N/***
+N*      ___     _     _   ___   ___ _            _
+N*     | _ \___(_)_ _| |_| __| | _ |_)___ ___ __| |_
+N*     |  _/ _ \ | ' \  _| _|  | _ \ (_-</ -_) _|  _|
+N*     |_| \___/_|_||_\__|_|   |___/_/__/\___\__|\__|
+N*
+N*/
+N
+N//Initializes  a point bisect animator.  It does not add it to the list
+N//returns true if successful, false if not
+Nuint32_t eGFX_InitPointF_BisectAnimator(  eGFX_PointF_BisectAnimator *P,
+N										eGFX_PointF Target,
+N										eGFX_PointF *Current,
+N										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N										float FractionalBisect		//The amount of percentage of the distance the point should move each step.   Range is 0 to 1.0.    values of 0 or less will map to 0.5.   Value of 1 or greater will map to 0.5
+N);
+N
+N//Initializes and adds a point bisect animator to the list.
+N//returns true if successful, false if not
+Nuint32_t eGFX_AddPointF_BisectAnimator(   eGFX_PointF_BisectAnimator *P,
+N										eGFX_PointF Target,
+N										eGFX_PointF *Current,
+N										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N										float FractionalBisect //The amount of percentage of the distance the point should move each step.   Range is 0 to 1.0.    values of 0 or less will map to 0.5.   Value of 1 or greater will map to 0.5
+N										);
+N
+Nvoid eGFX_ProcessPointF_BisectAnimator(eGFX_PointF_BisectAnimator *P);
+N
+N
+N/***
+N*      ___          _          ___   ___ _            _
+N*     / __| __ __ _| |__ _ _ _| __| | _ |_)___ ___ __| |_
+N*     \__ \/ _/ _` | / _` | '_| _|  | _ \ (_-</ -_) _|  _|
+N*     |___/\__\__,_|_\__,_|_| |_|   |___/_/__/\___\__|\__|
+N*
+N*/
+N
+N//Initializes the data struct
+Nuint32_t eGFX_InitScalarF_BisectAnimator(eGFX_ScalarF_BisectAnimator *P,
+N	float Target,
+N	float *Current,
+N	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N	float FractionalBisect);
+N
+Nuint32_t eGFX_AddScalarF_BisectAnimator(eGFX_ScalarF_BisectAnimator *P,
+N	float Target,
+N	float *Current,
+N	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N	float FractionalBisect);
+N
+N
+Nvoid eGFX_ProcessScalarF_BisectAnimator(eGFX_ScalarF_BisectAnimator *P);
+N
+N
+N
+N
+N/***
+N*      ___          _            _    _
+N*     / __| __ __ _| |__ _ _ _  | |  (_)_ _  ___ __ _ _ _
+N*     \__ \/ _/ _` | / _` | '_| | |__| | ' \/ -_) _` | '_|
+N*     |___/\__\__,_|_\__,_|_|   |____|_|_||_\___\__,_|_|
+N*
+N*/
+N
+N//Initializes the data struct
+Nuint32_t eGFX_InitScalarF_LinearAnimator(eGFX_ScalarF_LinearAnimator *P,
+N										float Target,
+N										float *Current,
+N										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N										float Increment
+N										);
+N
+N
+N
+N//Initializes and adds a scalarf linear animator and adds it to the list
+N//returns true if successful, false if not
+Nuint32_t eGFX_AddScalarF_LinearAnimator(eGFX_ScalarF_LinearAnimator *P,
+N										float Target,
+N										float *Current,
+N										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N										float Increment
+N										);
+N
+N										
+Nvoid eGFX_ProcessScalarF_LinearAnimator(eGFX_ScalarF_LinearAnimator *P);
+N
+N
+N/***
+N*      ___     _     _   ___   _    _
+N*     | _ \___(_)_ _| |_| __| | |  (_)_ _  ___ __ _ _ _
+N*     |  _/ _ \ | ' \  _| _|  | |__| | ' \/ -_) _` | '_|
+N*     |_| \___/_|_||_\__|_|   |____|_|_||_\___\__,_|_|
+N*
+N*/
+N
+N//Initializes the data struct
+Nuint32_t eGFX_InitPointF_LinearAnimator(eGFX_PointF_LinearAnimator *P,
+N	eGFX_PointF Target,
+N	eGFX_PointF *Current,
+N	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N	float IncrementX,
+N	float IncrementY
+N	);
+N
+N
+N
+N//Initializes and adds a scalarf linear animator and adds it to the list
+N//returns true if successful, false if not
+Nuint32_t eGFX_AddPointF_LinearAnimator(eGFX_PointF_LinearAnimator *P,
+N	eGFX_PointF Target,
+N	eGFX_PointF *Current,
+N	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+N	float IncrementX,
+N	float IncrementY
+N	);
+N
+N
+Nvoid eGFX_ProcessPointF_LinearAnimator(eGFX_PointF_LinearAnimator *P);
+N
+N
+N
+N
+N
+N										
+N/***
+N *       ____  ____       _ ______ _____ _______            _____ _____ 
+N *      / __ \|  _ \     | |  ____/ ____|__   __|     /\   |  __ \_   _|
+N *     | |  | | |_) |    | | |__ | |       | |       /  \  | |__) || |  
+N *     | |  | |  _ < _   | |  __|| |       | |      / /\ \ |  ___/ | |  
+N *     | |__| | |_) | |__| | |___| |____   | |     / ____ \| |    _| |_ 
+N *      \____/|____/ \____/|______\_____|  |_|    /_/    \_\_|   |_____|
+N *                                                                      
+N *                                                                      
+N */
+N		
+N//Call this when you are ready to draw all the objects on the list
+Nvoid eGFX_DrawObjects(eGFX_ImagePlane * Image);
+N
+N//Adds a eGFX object to the list
+Nuint32_t eGFX_AddObject(void * Object);
+N
+N//Clears all objects from the list
+Nvoid eGFX_ClearObjects(void);
+N
+N//Gets the number of objects in the object list
+Nuint32_t eGFX_GetAnimatorCount(void);
+N
+N//Disables rendering/processing of the object
+Nvoid eGFX_DisableObject(void * Object);
+N
+N//enable rendering/processing of the object
+Nvoid eGFX_EnableObject(void * Object);
+N
+N/***
+N*      _____        _   ___
+N*     |_   _|____ _| |_| __|
+N*       | |/ -_) \ /  _| _|
+N*       |_|\___/_\_\\__|_|
+N*
+N*/
+N
+N//Draws a TextF object onto an image Plane
+Nvoid eGFX_DrawObject_TextF(eGFX_ImagePlane * Image, eGFX_Obj_TextF *TextF_Object);
+N
+N//Initializes a TextF object
+Nvoid eGFX_InitObjectTextF(eGFX_Obj_TextF * TF,
+N							eGFX_PointF Position,
+N							eGFX_Font *Font,
+N							char * String
+N							);	
+N
+N//Initializes a TextF object and also adds it to the current draw list
+Nvoid eGFX_AddObjectTextF(eGFX_Obj_TextF * TF,
+N						eGFX_PointF Position,
+N						eGFX_Font *Font,
+N						char * String
+N						);
+N
+N/***
+N*      ___ _            _        _   _____        _   ___
+N*     / __| |_  __ _ __| |___ __| | |_   _|____ _| |_| __|
+N*     \__ \ ' \/ _` / _` / -_) _` |   | |/ -_) \ /  _| _|
+N*     |___/_||_\__,_\__,_\___\__,_|   |_|\___/_\_\\__|_|
+N*
+N*/
+N
+Nvoid eGFX_InitObjectShadedTextF(eGFX_Obj_ShadedTextF * TF,
+N	eGFX_PointF Position,
+N	eGFX_Font *Font,
+N	char * String,
+N	float Shading
+N	);
+N
+N
+Nvoid eGFX_AddObjectShadedTextF(eGFX_Obj_ShadedTextF * TF,
+N	eGFX_PointF Position,
+N	eGFX_Font *Font,
+N	char * String,
+N	float Shading
+N	);
+N
+Nvoid	eGFX_DrawObject_ShadedTextF(eGFX_ImagePlane * Image, eGFX_Obj_ShadedTextF *ShadedTextF_Object);
+N
+N						
+N/***
+N*      _    _          ___
+N*     | |  (_)_ _  ___| __|
+N*     | |__| | ' \/ -_) _|
+N*     |____|_|_||_\___|_|
+N*
+N*/
+N
+N//Initializes a LineF object
+Nvoid eGFX_InitObjectLineF(eGFX_Obj_LineF * LF,
+N	eGFX_PointF Start,
+N	eGFX_PointF End,
+N	eGFX_PixelState PS
+N	);
+N
+N
+N//Initializes a LineF object and also adds it to the current draw list
+Nvoid eGFX_AddObjectLineF(eGFX_Obj_LineF * LF,
+N	eGFX_PointF Start,
+N	eGFX_PointF End,
+N	eGFX_PixelState PS
+N	);
+N
+N
+N//Draws a LineF object onto an image Plane
+Nvoid	eGFX_DrawObject_LineF(eGFX_ImagePlane * Image, eGFX_Obj_LineF *LineF_Object);
+N
+N/***
+N*      ___          _ _       ___
+N*     / __|_ __ _ _(_) |_ ___| __|
+N*     \__ \ '_ \ '_| |  _/ -_) _|
+N*     |___/ .__/_| |_|\__\___|_|
+N*         |_|
+N*/
+N
+N//Initializes a SpriteF object
+Nvoid eGFX_InitObjectSpriteF(eGFX_Obj_SpriteF * S,
+N							eGFX_PointF Position,
+N							eGFX_ImagePlane *	Sprite
+N							);
+N
+N//Initializes a SpriteF object and adds it to the object list
+Nvoid eGFX_AddObjectSpriteF(eGFX_Obj_SpriteF * S,
+N							eGFX_PointF Position,
+N							eGFX_ImagePlane *	Sprite
+N							);
+N
+N//draws a spritef onto an image plane
+Nvoid	eGFX_DrawObject_SpriteF(eGFX_ImagePlane * Image, eGFX_Obj_SpriteF *SpriteF_Object);
+N
+N/***
+N*      ___          _ _       ___   ___          _        _
+N*     / __|_ __ _ _(_) |_ ___| __| / __| __ __ _| |___ __| |
+N*     \__ \ '_ \ '_| |  _/ -_) _|  \__ \/ _/ _` | / -_) _` |
+N*     |___/ .__/_| |_|\__\___|_|   |___/\__\__,_|_\___\__,_|
+N*         |_|
+N*/
+N
+N//Initializes a scaled sprited object
+Nvoid eGFX_InitObjectScaledSpriteF(eGFX_Obj_ScaledSpriteF * S,
+N	eGFX_PointF Position,
+N	eGFX_ImagePlane *	Sprite,
+N	float Scale
+N	);
+N
+N
+N//Initializes a scaled sprited object and adds it to the object list
+Nvoid eGFX_AddObjectScaledSpriteF(eGFX_Obj_ScaledSpriteF * S,
+N	eGFX_PointF Position,
+N	eGFX_ImagePlane *	Sprite,
+N	float Scale
+N	);
+N
+N//draws a scaled spritef onto an image plane
+Nvoid	eGFX_DrawObject_ScaledSpriteF(eGFX_ImagePlane * Image, eGFX_Obj_ScaledSpriteF *SpriteF_Object);
+N
+N
+N/***
+N*       ___          ___
+N*      | _ ) _____ _| __|
+N*      | _ \/ _ \ \ / _|
+N*      |___/\___/_\_\_|
+N*
+N*/
+N
+N
+Nvoid eGFX_InitObjectBoxF(eGFX_Obj_BoxF * BF,
+N	eGFX_PointF P1,
+N	eGFX_PointF P2,
+N	eGFX_PixelState PS,
+N	uint8_t BoxF_RenderOption
+N	);
+N
+N
+Nvoid eGFX_AddObjectBoxF(eGFX_Obj_BoxF * BF,
+N	eGFX_PointF P1,
+N	eGFX_PointF P2,
+N	eGFX_PixelState PS,
+N	uint8_t BoxF_RenderOption
+N	);
+N
+N
+Nvoid	eGFX_DrawObject_BoxF(eGFX_ImagePlane * Image, eGFX_Obj_BoxF *BoxF_Object);
+N
+N
+N/***
+N*       ___ _        _     ___
+N*      / __(_)_ _ __| |___| __|
+N*     | (__| | '_/ _| / -_) _|
+N*      \___|_|_| \__|_\___|_|
+N*
+N*/
+N
+N
+Nvoid eGFX_InitObjectCircleF(eGFX_Obj_CircleF * CF,
+N	eGFX_PointF Position,
+N	float Radius,
+N	eGFX_PixelState PS,
+N	uint8_t CircleF_RenderOption
+N	);
+N
+N
+Nvoid eGFX_AddObjectCircleF(eGFX_Obj_CircleF * CF,
+N	eGFX_PointF Position,
+N	float Radius,
+N	eGFX_PixelState PS,
+N	uint8_t CircleF_RenderOption
+N	);
+N
+Nvoid	eGFX_DrawObject_CircleF(eGFX_ImagePlane * Image, eGFX_Obj_CircleF *CircleF_Object);
+N
+N
+N#endif
+N
+N
+N#ifdef __cplusplus
+S }
+N#endif
+N
+L 3 "SRC\eGFX\Fonts\FONT_5_7_1BPP.c" 2
+N#include "FONT_5_7_1BPP.h" 
+L 1 "SRC\eGFX\Fonts\FONT_5_7_1BPP.h" 1
+N#include "eGFX.h" 
+L 1 ".\SRC\eGFX\eGFX.h" 1
+N
+N#ifdef __cplusplus
+Sextern "C" {
+N#endif
+N
+N
+N#include <stdlib.h>
+N
+N#include "eGFX_DataTypes.h"
+L 1 ".\SRC\eGFX\eGFX_DataTypes.h" 1
+N#include "stdint.h"
+N
+N
+N#ifndef eGFX_DATA_TYPES_H
+S#define eGFX_DATA_TYPES_H
+S
+S
+Stypedef int16_t FIXED_7_8;
+Stypedef int16_t FIXED_9_6;
+S
+Stypedef int16_t FIXED_0_15;
+Stypedef int16_t FIXED_1_14;
+S
+S
+S#define eGFX_IMAGE_PLANE_1BPP		 0
+S#define eGFX_IMAGE_PLANE_3BPP_RGB    	 1
+S#define eGFX_IMAGE_PLANE_4BPP		    2
+S#define eGFX_IMAGE_PLANE_8BPP		   3
+S#define eGFX_IMAGE_PLANE_16BPP_565    4
+S#define eGFX_IMAGE_PLANE_24BPP        5
+S#define eGFX_IMAGE_PLANE_32BPP        6
+S
+S
+S
+Stypedef struct
+S{
+S    uint8_t Type;
+S    uint8_t *Data;
+S    uint16_t SizeX;
+S    uint16_t SizeY;
+S
+S} eGFX_ImagePlane;
+S
+Stypedef struct
+S{
+S    int16_t X;
+S    int16_t Y;
+S} eGFX_Point;
+S
+Stypedef struct
+S{
+S    float X; 	
+S    float Y;  
+S} eGFX_PointF;
+S
+Stypedef struct
+S{
+S    eGFX_Point P1;
+S    eGFX_Point P2;
+S} eGFX_Box;
+S
+Stypedef struct
+S{
+S    eGFX_Point Center;
+S    uint8_t NumPoints;
+S    uint8_t DrawMode;
+S    const eGFX_Point *PointList;
+S
+S} eGFX_ListPrimitive;
+S
+S
+S
+S#define eGFX_LIST_PRIMITIVE_CONNECTED                              0x01
+S#define eGFX_LIST_PRIMITIVE_DISCONNECTED                           0x02
+S#define eGFX_LIST_PRIMITIVE_CLOSED								   0x03
+S#define eGFX_LIST_PRIMITIVE_CONNECTED_YFLIPPED			 		   0x04
+S#define eGFX_LIST_PRIMITIVE_DISCONNECTED_YFLIPPED		   		   0x05
+S#define eGFX_LIST_PRIMITIVE_CLOSED_YFLIPPED			   			   0x06
+S
+Stypedef struct
+S{
+S    const eGFX_ImagePlane *CharacterSprites[0x80-0x20];
+S  
+S	//Some TT Metrics
+S	int32_t Ascent; //Ascent scaled up by 65536 to store fractional value		(Q15.16)
+S	int32_t Descent; //Descent scaled up by 65536 to store fractional value		(Q15.16)
+S	int32_t LineSpacing; //Linespacing scaled up by 65536 to store fractional value  (Q15.16)
+S	
+S	uint8_t  SpacesPerTab;
+S    uint8_t  InterCharacterSpacing;
+S   
+S	uint8_t  Padding[2];
+S
+S} eGFX_Font;
+S
+S
+S#define eGFX_PIXEL_ON     0xFFFFFFFF
+S#define eGFX_PIXEL_OFF    0
+S
+Stypedef uint32_t eGFX_PixelState;
+S
+S/***
+S*       ____  _     _           _
+S*      / __ \| |   (_)         | |
+S*     | |  | | |__  _  ___  ___| |_ ___
+S*     | |  | | '_ \| |/ _ \/ __| __/ __|
+S*     | |__| | |_) | |  __/ (__| |_\__ \
+S*      \____/|_.__/| |\___|\___|\__|___/
+X
+S*                 _/ |
+S*                |__/
+S*/
+S
+Stypedef struct 
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	
+S}	eGFX_ObjectHeader;
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	uint32_t CurrentStep;
+S	uint32_t LastStep;
+S}	eGFX_AnimatorHeader;
+S
+S#define eGFX_OBJECT_STATE_ACTIVE							        	1
+S#define eGFX_OBJECT_STATE_ANIMATION_ACTIVE								2
+S#define eGFX_OBJECT_STATE_INACTIVE										0
+S
+S/***
+S*                     _                 _                ____  _     _           _
+S*         /\         (_)               | |              / __ \| |   (_)         | |
+S*        /  \   _ __  _ _ __ ___   __ _| |_ ___  _ __  | |  | | |__  _  ___  ___| |_ ___
+S*       / /\ \ | '_ \| | '_ ` _ \ / _` | __/ _ \| '__| | |  | | '_ \| |/ _ \/ __| __/ __|
+S*      / ____ \| | | | | | | | | | (_| | || (_) | |    | |__| | |_) | |  __/ (__| |_\__ \
+S*     /_/    \_\_| |_|_|_| |_| |_|\__,_|\__\___/|_|     \____/|_.__/| |\___|\___|\__|___/
+X
+S*                                                                  _/ |
+S*                                                                 |__/
+S*/
+S
+S
+S
+S#define eGFX_OBJECT_POINTF_BISECT_ANIMATOR								0xF0
+S#define eGFX_OBJECT_POINTF_LINEAR_ANIMATOR								0xF1
+S
+S#define eGFX_OBJECT_SCALARF_BISECT_ANIMATOR								0xF2
+S#define eGFX_OBJECT_SCALARF_LINEAR_ANIMATOR								0xF3
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	uint32_t CurrentStep;
+S	uint32_t LastStep;
+S	eGFX_PointF Target;
+S	eGFX_PointF *Current;
+S
+S	float FractionalBisect; //The amount of percentage of the distance the point should move each step. must between a number between zero and 1
+S
+S} eGFX_PointF_BisectAnimator;
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	uint32_t CurrentStep;
+S	uint32_t LastStep;
+S	eGFX_PointF Target;
+S	eGFX_PointF *Current;
+S	float IncrementX;
+S	float IncrementY;
+S
+S} eGFX_PointF_LinearAnimator;
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	uint32_t CurrentStep;
+S	uint32_t LastStep;
+S	float Target;
+S	float *Current;
+S	float Increment; //Increment we should make each step
+S
+S} eGFX_ScalarF_LinearAnimator;
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	uint32_t CurrentStep;
+S	uint32_t LastStep;
+S	float Target;
+S	float *Current;
+S	float FractionalBisect; //The amount of percentage of the distance the point should move each step. must between a number between zero and 1
+S
+S} eGFX_ScalarF_BisectAnimator;
+S
+S/***
+S*       _____                 _     _         ____  _     _           _
+S*      / ____|               | |   (_)       / __ \| |   (_)         | |
+S*     | |  __ _ __ __ _ _ __ | |__  _  ___  | |  | | |__  _  ___  ___| |_ ___
+S*     | | |_ | '__/ _` | '_ \| '_ \| |/ __| | |  | | '_ \| |/ _ \/ __| __/ __|
+S*     | |__| | | | (_| | |_) | | | | | (__  | |__| | |_) | |  __/ (__| |_\__ \
+S*      \_____|_|  \__,_| .__/|_| |_|_|\___|  \____/|_.__/| |\___|\___|\__|___/
+X
+S*                      | |                              _/ |
+S*                      |_|                             |__/
+S*/
+S
+S#define eGFX_OBJECT_TEXTF												0x0000
+S#define eGFX_OBJECT_SHADED_TEXTF										0x0001
+S#define eGFX_OBJECT_LINEF												0x0002
+S#define eGFX_OBJECT_SPRITEF												0x0003
+S#define eGFX_OBJECT_SCALED_SPRITEF										0x0004
+S#define eGFX_OBJECT_BOXF												0x0005
+S#define eGFX_OBJECT_CIRCLEF												0x0006
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	eGFX_PointF Position;
+S	char *String;
+S	eGFX_Font *Font;
+S	
+S} eGFX_Obj_TextF;
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	eGFX_PointF Position;
+S	char *String;
+S	eGFX_Font *Font;
+S	float Shading;
+S
+S} eGFX_Obj_ShadedTextF;
+S
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	eGFX_PointF Start;
+S	eGFX_PointF End;
+S	eGFX_PixelState PixelState; 
+S} eGFX_Obj_LineF;
+S
+S#define eGFX_CIRCLEF_RENDER_OPTION_OUTLINE	0x00
+S#define eGFX_CIRCLEF_RENDER_OPTION_FILLED	0x01
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	eGFX_PointF Position;
+S	float Radius;
+S	eGFX_PixelState PixelState; 
+S	uint8_t RenderOption;
+S} eGFX_Obj_CircleF;
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	eGFX_PointF Position;
+S	eGFX_ImagePlane * Sprite;
+S	
+S} eGFX_Obj_SpriteF;
+S
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S	
+S	eGFX_PointF Position;
+S	eGFX_ImagePlane * Sprite;
+S
+S	float Scale;
+S
+S} eGFX_Obj_ScaledSpriteF;
+S
+S
+S#define eGFX_BOXF_RENDER_OPTION_OUTLINE	0x00
+S#define eGFX_BOXF_RENDER_OPTION_FILLED	0x01
+S
+Stypedef struct
+S{
+S	uint32_t Type;
+S	uint32_t State;
+S
+S	eGFX_PointF P1;
+S	eGFX_PointF P2;
+S
+S	eGFX_PixelState PixelState;
+S
+S	uint8_t BoxF_RenderOption;
+S
+S} eGFX_Obj_BoxF;
+S
+S
+N#endif
+L 10 ".\SRC\eGFX\eGFX.h" 2
+N
+N
+N#ifndef _eGFX_H__
+S#define _eGFX_H__
+S
+S#define eGFX_MAX_ANIMATORS										  32
+S#define eGFX_MAX_OBJECTS										  64
+S
+S#define eGFX_SPACES_PER_TAB                                        4
+S#define eGFX_MAX_STRING_LEN                                        64
+S#define eGFX_MAX_PRINTF_BUF_LENGTH                                 64
+S
+S#define eGFX_API_LEVEL											   1
+S#define eGFX_REVISION											   2
+S
+S
+S#define eGFX_CALCULATE_1BPP_BUFFER_ROW_BYTE_SIZE(x)			 ((x+7)>>3) //We add 8 to round up to the next even byte boundary
+S#define eGFX_CALCULATE_4BPP_BUFFER_ROW_BYTE_SIZE(x)			 ((x+1)>>1) //We add 1 to round up to the next even byte boundary
+S#define eGFX_CALCULATE_8BPP_BUFFER_ROW_BYTE_SIZE(x)			 (x)
+S#define eGFX_CALCULATE_16BPP_BUFFER_ROW_BYTE_SIZE(x)		 (x*2)
+S#define eGFX_CALCULATE_24BPP_BUFFER_ROW_BYTE_SIZE(x)	 	 (x*3)
+S#define	eGFX_CALCULATE_32BPP_BUFFER_ROW_BYTE_SIZE(x)	 	 (x*4)
+S
+S#define eGFX_CALCULATE_1BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (eGFX_CALCULATE_1BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+S#define eGFX_CALCULATE_3BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (((x * y * 3))/8) //This is a special type  for sharp 8 color memory LCDs.   Packing is done in the data buffer so the dump to the screen is simple
+S#define eGFX_CALCULATE_4BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (eGFX_CALCULATE_4BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+S#define eGFX_CALCULATE_8BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)    (eGFX_CALCULATE_8BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+S#define eGFX_CALCULATE_16BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)   (eGFX_CALCULATE_16BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+S#define eGFX_CALCULATE_24BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)   (eGFX_CALCULATE_24BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+S#define eGFX_CALCULATE_32BPP_IMAGE_STORAGE_SPACE_SIZE(x,y)   (eGFX_CALCULATE_32BPP_BUFFER_ROW_BYTE_SIZE(x)	* y)
+S
+S#define ROUND_TO_INT16_T(x)	((int16_t)(x + 0.5f))
+S
+Sextern const FIXED_1_14 eGFX_Fixed_1_14_SineTable [256];
+Sextern const FIXED_7_8 eGFX_Fixed_7_8_SineTable[256];
+S
+S#define eGFX_GET_INT_FROM_FIXED_7_8(A)				(int16_t)(A>>8)
+S#define eGFX_INT_TO_FIXED_7_8(A)					((FIXED_7_8)(A)<<8)
+S#define eGFX_GET_FRAC_FROM_FIXED_7_8(A)				(FIXED_7_8)(A&0xFF)
+S
+S#define eGFX_GET_INT_FROM_FIXED_9_6_(A)				(int16_t)(A>>6)
+S#define eGFX_INT_TO_FIXED_9_6(A)					((FIXED_9_6)(A)<<6)
+S#define eGFX_GET_FRAC_FROM_FIXED_6_9(A)				(FIXED_9_6)(A&0x3F)
+S
+SFIXED_7_8 eGFX_GET_INT_FROM_FIXED_7_8_ROUND_TO_NEAREST(FIXED_7_8 A);
+SFIXED_7_8 eGFX_FLOAT_TO_FIXED_7_8(float A);
+Sint16_t eGFX_FMul_15_0to0_15(int16_t A, int16_t B);
+Sint16_t eGFX_FMul_7_8to0_15(int16_t A, int16_t B);
+Sint16_t eGFX_FMul_15_0to7_8(int16_t A,int16_t B);
+Sint16_t eGFX_FMul_15_0to1_14(int16_t A,int16_t B);
+Sint16_t eGFX_ABS(int16_t A);
+S
+S
+S#define eGFX_RGB888_TO_RGB565(R,G,B)	 ( ((R>>2)<<11) | ((G>>2)<<5) | (B>>3))
+S
+S
+S#ifndef TRUE
+S	#define TRUE 1
+S#endif
+S
+S#ifndef FALSE
+S	#define FALSE 0
+S#endif
+S
+S
+S/***
+S *      _____ _          _    ____                       _   _
+S *     |  __ (_)        | |  / __ \                     | | (_)
+S *     | |__) |__  _____| | | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+S *     |  ___/ \ \/ / _ \ | | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+S *     | |   | |>  <  __/ | | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+S *     |_|   |_/_/\_\___|_|  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+S *                                 | |
+S *                                 |_|
+S */
+Svoid eGFX_PutPixel(const eGFX_ImagePlane *Image,
+S                   int16_t x,
+S                   int16_t y,
+S                   eGFX_PixelState PS);
+S
+SeGFX_PixelState eGFX_GetPixel(const eGFX_ImagePlane *Image,
+S                         int16_t x,
+S                         int16_t y);
+S
+S
+S
+S
+S/***
+S *      _____      _           _ _   _              ____                       _   _
+S *     |  __ \    (_)         (_) | (_)            / __ \                     | | (_)
+S *     | |__) | __ _ _ __ ___  _| |_ ___   _____  | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+S *     |  ___/ '__| | '_ ` _ \| | __| \ \ / / _ \ | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+S *     | |   | |  | | | | | | | | |_| |\ V /  __/ | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+S *     |_|   |_|  |_|_| |_| |_|_|\__|_| \_/ \___|  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+S *                                                       | |
+S *                                                       |_|
+S */
+S
+S 
+Svoid eGFX_DrawHline(eGFX_ImagePlane *Image,
+S                    int16_t XStart,
+S                    int16_t XStop,
+S                    int16_t Y,
+S                    eGFX_PixelState PS);
+S
+Svoid eGFX_DrawFilledBox(eGFX_ImagePlane *Image,
+S                        eGFX_Box *Box,
+S                        eGFX_PixelState PS);
+S
+Svoid eGFX_DrawBox(eGFX_ImagePlane *Image,
+S                  eGFX_Box *Box,
+S                  eGFX_PixelState PS);
+S
+Svoid eGFX_DrawVline(eGFX_ImagePlane *Image,
+S                    int16_t YStart,
+S                    int16_t YStop,
+S                    int16_t X,
+S                    eGFX_PixelState PS);
+S
+Svoid eGFX_DrawLine(eGFX_ImagePlane *Image,
+S                   int16_t X1,
+S                   int16_t Y1,
+S                   int16_t X2,
+S                   int16_t Y2,
+S                   eGFX_PixelState PS);
+S
+Svoid eGFX_DrawListPrimitive(eGFX_ImagePlane *Image,
+S                            eGFX_ListPrimitive *LP ,
+S                            eGFX_PixelState PS);
+S
+Svoid eGFX_DrawScaledListPrimitive(eGFX_ImagePlane *Image,
+S                                  eGFX_ListPrimitive *LP ,
+S                                  FIXED_7_8 Scale,
+S                                  eGFX_PixelState PS);
+S
+Svoid eGFX_DrawRotatedListPrimitive(eGFX_ImagePlane *Image,
+S                                   eGFX_ListPrimitive *LP ,
+S                                   uint8_t Angle,
+S                                   eGFX_PixelState PS);
+S
+Svoid eGFX_DrawScaledRotatedListPrimitive(eGFX_ImagePlane *Image,
+S        eGFX_ListPrimitive *LP ,
+S        uint8_t Angle,
+S        FIXED_7_8 Scale,
+S        eGFX_PixelState PS);
+S
+Svoid eGFX_DrawCircle(eGFX_ImagePlane *RC,
+S                     int16_t x0,
+S                     int16_t y0,
+S                     int16_t radius,
+S                     eGFX_PixelState PS);
+S
+Svoid eGFX_DrawFilledCircle(eGFX_ImagePlane *RC,
+S	int16_t x0,
+S	int16_t y0,
+S	int16_t radius,
+S	eGFX_PixelState PS);
+S
+S
+S
+S/***
+S *       _____ _        _                ____                       _   _
+S *      / ____| |      (_)              / __ \                     | | (_)
+S *     | (___ | |_ _ __ _ _ __   __ _  | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+S *      \___ \| __| '__| | '_ \ / _` | | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+S *      ____) | |_| |  | | | | | (_| | | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+S *     |_____/ \__|_|  |_|_| |_|\__, |  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+S *                               __/ |        | |
+S *                              |___/         |_|
+S */
+S
+Sint16_t eGFX_ScaledDrawCharacter(eGFX_ImagePlane *Image,
+S                                 int16_t StartX,
+S                                 int16_t StartY,
+S                                 uint8_t Character,
+S                                 const eGFX_Font *MyFont,
+S                                 float ScaleFactor);
+S
+Sint16_t eGFX_DrawCharacter(eGFX_ImagePlane *Image,
+S                           int16_t StartX,
+S                           int16_t StartY,
+S                           uint8_t Character,
+S                           const eGFX_Font *MyFont);
+S
+Sint16_t eGFX_DrawCharacterFaded(eGFX_ImagePlane *Image,
+S                           int16_t StartX,
+S                           int16_t StartY,
+S                           uint8_t Character,
+S                           const eGFX_Font *MyFont,
+S                           eGFX_PixelState PS);
+S
+Sint16_t eGFX_DrawCharacterShaded(eGFX_ImagePlane *Image,
+S									int16_t StartX,
+S									int16_t StartY,
+S									uint8_t Character,
+S									const eGFX_Font *MyFont,
+S									float Shading);
+S
+S
+Sint16_t eGFX_GetStringWidth(char *String,
+S                            const eGFX_Font *MyFont);
+S
+Sint16_t eGFX_GetStringWidth_CustomSpacing(char *String,
+S											const eGFX_Font *MyFont,
+S											uint16_t Spacing);
+S
+S
+Svoid eGFX_DrawHorizontalCenteredString(eGFX_ImagePlane *Image,
+S                                       int16_t StartY,
+S                                       char *String,
+S                                       const eGFX_Font *MyFont);
+S
+Sint16_t eGFX_DrawRightAlignedCenteredString_CustomSpacing(eGFX_ImagePlane *Image,
+S        int16_t StartY,
+S        char *String,
+S        const eGFX_Font *MyFont,
+S        uint16_t CustomCharacterSpacing,
+S        int16_t RightSideBuffer);
+S
+Svoid eGFX_DrawHorizontalCenteredString_CustomSpacing(eGFX_ImagePlane *Image,
+S        int16_t StartY,
+S        char *String,
+S        const eGFX_Font *MyFont,
+S        uint16_t Spacing);
+S
+Svoid eGFX_ScaledDrawString(eGFX_ImagePlane *Image,
+S                           int16_t StartX,
+S                           int16_t StartY,
+S                           char *String,
+S                           const eGFX_Font *MyFont,
+S                           float ScaleFactor);
+S
+Sint16_t  eGFX_DrawStringFaded(eGFX_ImagePlane *Image,
+S						 char *String,
+S                         int16_t StartX,
+S                         int16_t StartY,
+S                         const eGFX_Font *MyFont,
+S						eGFX_PixelState PS
+S                         );
+S
+S
+Sint16_t  eGFX_DrawStringShaded(eGFX_ImagePlane *Image,
+S								char *String,
+S								int16_t StartX,
+S								int16_t StartY,
+S								const eGFX_Font *MyFont,
+S								float Shading
+S								);
+S
+Svoid eGFX_ScaledDrawString_CustomSpacing(eGFX_ImagePlane *Image,
+S        int16_t StartX,
+S        int16_t StartY,
+S        char *String,
+S        const eGFX_Font *MyFont,
+S        float ScaleFactor ,
+S        uint16_t Spacing);
+S
+Sint16_t  eGFX_DrawString(eGFX_ImagePlane *Image,
+S						char * String,
+S                         int16_t StartX,
+S                         int16_t StartY,
+S
+S                         const eGFX_Font *MyFont
+S                         );
+S
+Sint16_t  eGFX_printf(eGFX_ImagePlane *Image,
+S                     int16_t StartX,
+S                     int16_t StartY,
+S                     const eGFX_Font *MyFont,
+S                     
+S                     char *FormatString,...);
+S
+Sint16_t eGFX_DrawString_CustomSpacing(eGFX_ImagePlane *Image,
+S                                      int16_t StartX,
+S                                      int16_t StartY,
+S                                      char *String,
+S                                      const eGFX_Font *MyFont,uint16_t Spacing);
+S                                      
+Sint16_t  eGFX_printf_Colored(eGFX_ImagePlane *Image,
+S                     int16_t StartX,
+S                     int16_t StartY,
+S                     const eGFX_Font *MyFont,
+S											uint32_t Color,
+S                     char *FormatString,...);
+S
+Sint16_t  eGFX_printf_HorizontalCentered_Colored(eGFX_ImagePlane *Image,
+S                                         int16_t StartY,
+S                                        const eGFX_Font *MyFont,
+S                                        uint32_t Color,
+S                                        char *FormatString,...);
+S/***
+S*      _____  _                     ____                       _   _
+S*     |  __ \| |                   / __ \                     | | (_)
+S*     | |__) | | __ _ _ __   ___  | |  | |_ __   ___ _ __ __ _| |_ _  ___  _ __  ___
+S*     |  ___/| |/ _` | '_ \ / _ \ | |  | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+S*     | |    | | (_| | | | |  __/ | |__| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+S*     |_|    |_|\__,_|_| |_|\___|  \____/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+X
+S*                                        | |
+S*                                        |_|
+S*/
+S
+Svoid eGFX_Blit(eGFX_ImagePlane *Destination,
+S               int16_t x,
+S               int16_t y,
+S               const eGFX_ImagePlane *Sprite);
+S
+Svoid eGFX_CenteredBlit(eGFX_ImagePlane *Destination,
+S			int16_t x,
+S			int16_t y,
+S			const eGFX_ImagePlane *Sprite);
+S
+Svoid eGFX_BlitFaded(eGFX_ImagePlane *Destination,
+S               int16_t x,
+S               int16_t y,
+S               const eGFX_ImagePlane *Sprite,
+S               eGFX_PixelState PS);
+S
+Svoid eGFX_BlitShaded(eGFX_ImagePlane *Destination,
+S					int16_t x,
+S					int16_t y,
+S					const eGFX_ImagePlane *Sprite,
+S					float Shading);
+S                    
+Svoid eGFX_BlitColored(eGFX_ImagePlane *Destination,
+S                    int16_t x,
+S                    int16_t y,
+S                    const eGFX_ImagePlane *Sprite,
+S                    uint32_t Color);
+S
+Svoid eGFX_ScaledBlit(eGFX_ImagePlane *Destination,
+S                     int16_t x,
+S                     int16_t y,
+S                     const eGFX_ImagePlane *Sprite,
+S                     float ScaleFactor);
+S
+Suint8_t eGFX_GetBitFromArray(uint8_t *DataArray,uint16_t Bit);
+S
+S
+Suint8_t eGFX_ImagePlane_GetByte(eGFX_ImagePlane   *Image,
+S                                uint16_t X,
+S                                uint16_t Y);
+S
+S
+Svoid eGFX_ImagePlaneInit(eGFX_ImagePlane   *Image, uint8_t * Store, int16_t SizeX, int16_t SizeY, uint8_t Type);
+S
+Svoid eGFX_ImagePlane_Clear(eGFX_ImagePlane   *Image);
+S
+S
+S
+S/***
+S*                     _                 _                        _____ _____
+S*         /\         (_)               | |                 /\   |  __ \_   _|
+S*        /  \   _ __  _ _ __ ___   __ _| |_ ___  _ __     /  \  | |__) || |
+S*       / /\ \ | '_ \| | '_ ` _ \ / _` | __/ _ \| '__|   / /\ \ |  ___/ | |
+S*      / ____ \| | | | | | | | | | (_| | || (_) | |     / ____ \| |    _| |_
+S*     /_/    \_\_| |_|_|_| |_| |_|\__,_|\__\___/|_|    /_/    \_\_|   |_____|
+S*
+S*
+S*/
+S
+S//Call this in the main loop.   Animators will be stepped at the rate that this is called!
+Svoid eGFX_ProcessAnimators(void);
+S
+S//Adds an animator object to the list.  returns TRUE if successful.
+Suint32_t eGFX_AddAnimator(void * Animator);
+S
+S//Clears all animators from the list
+Svoid eGFX_ClearAnimators(void);
+S
+S//Gets the number of animator objects in the list
+Suint32_t eGFX_GetAnimatorCount(void);
+S
+S//Returns True if the animator is complete
+Suint32_t eGFX_AnimatorIsComplete(void * A);
+S
+S//returns TRUE if all of the animators are complete
+Suint32_t eGFX_AnimatorsAreComplete(void);
+S
+S//Pauses all the animators (sets the state to inactive)
+Svoid eGFX_PauseAnimators(void);
+S
+S//Starts all the Animators in the list.  (Sets the State to Active)
+Svoid eGFX_StartAnimators(void);
+S
+S//Resets and Animator to step 0 and starts it again.
+Svoid eGFX_ResetAnimator(void * A);
+S
+S//Resets and restarts all animators
+Svoid eGFX_ResetAnimators(void);
+S
+S/***
+S*      ___     _     _   ___   ___ _            _
+S*     | _ \___(_)_ _| |_| __| | _ |_)___ ___ __| |_
+S*     |  _/ _ \ | ' \  _| _|  | _ \ (_-</ -_) _|  _|
+S*     |_| \___/_|_||_\__|_|   |___/_/__/\___\__|\__|
+S*
+S*/
+S
+S//Initializes  a point bisect animator.  It does not add it to the list
+S//returns true if successful, false if not
+Suint32_t eGFX_InitPointF_BisectAnimator(  eGFX_PointF_BisectAnimator *P,
+S										eGFX_PointF Target,
+S										eGFX_PointF *Current,
+S										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S										float FractionalBisect		//The amount of percentage of the distance the point should move each step.   Range is 0 to 1.0.    values of 0 or less will map to 0.5.   Value of 1 or greater will map to 0.5
+S);
+S
+S//Initializes and adds a point bisect animator to the list.
+S//returns true if successful, false if not
+Suint32_t eGFX_AddPointF_BisectAnimator(   eGFX_PointF_BisectAnimator *P,
+S										eGFX_PointF Target,
+S										eGFX_PointF *Current,
+S										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S										float FractionalBisect //The amount of percentage of the distance the point should move each step.   Range is 0 to 1.0.    values of 0 or less will map to 0.5.   Value of 1 or greater will map to 0.5
+S										);
+S
+Svoid eGFX_ProcessPointF_BisectAnimator(eGFX_PointF_BisectAnimator *P);
+S
+S
+S/***
+S*      ___          _          ___   ___ _            _
+S*     / __| __ __ _| |__ _ _ _| __| | _ |_)___ ___ __| |_
+S*     \__ \/ _/ _` | / _` | '_| _|  | _ \ (_-</ -_) _|  _|
+S*     |___/\__\__,_|_\__,_|_| |_|   |___/_/__/\___\__|\__|
+S*
+S*/
+S
+S//Initializes the data struct
+Suint32_t eGFX_InitScalarF_BisectAnimator(eGFX_ScalarF_BisectAnimator *P,
+S	float Target,
+S	float *Current,
+S	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S	float FractionalBisect);
+S
+Suint32_t eGFX_AddScalarF_BisectAnimator(eGFX_ScalarF_BisectAnimator *P,
+S	float Target,
+S	float *Current,
+S	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S	float FractionalBisect);
+S
+S
+Svoid eGFX_ProcessScalarF_BisectAnimator(eGFX_ScalarF_BisectAnimator *P);
+S
+S
+S
+S
+S/***
+S*      ___          _            _    _
+S*     / __| __ __ _| |__ _ _ _  | |  (_)_ _  ___ __ _ _ _
+S*     \__ \/ _/ _` | / _` | '_| | |__| | ' \/ -_) _` | '_|
+S*     |___/\__\__,_|_\__,_|_|   |____|_|_||_\___\__,_|_|
+S*
+S*/
+S
+S//Initializes the data struct
+Suint32_t eGFX_InitScalarF_LinearAnimator(eGFX_ScalarF_LinearAnimator *P,
+S										float Target,
+S										float *Current,
+S										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S										float Increment
+S										);
+S
+S
+S
+S//Initializes and adds a scalarf linear animator and adds it to the list
+S//returns true if successful, false if not
+Suint32_t eGFX_AddScalarF_LinearAnimator(eGFX_ScalarF_LinearAnimator *P,
+S										float Target,
+S										float *Current,
+S										uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S										float Increment
+S										);
+S
+S										
+Svoid eGFX_ProcessScalarF_LinearAnimator(eGFX_ScalarF_LinearAnimator *P);
+S
+S
+S/***
+S*      ___     _     _   ___   _    _
+S*     | _ \___(_)_ _| |_| __| | |  (_)_ _  ___ __ _ _ _
+S*     |  _/ _ \ | ' \  _| _|  | |__| | ' \/ -_) _` | '_|
+S*     |_| \___/_|_||_\__|_|   |____|_|_||_\___\__,_|_|
+S*
+S*/
+S
+S//Initializes the data struct
+Suint32_t eGFX_InitPointF_LinearAnimator(eGFX_PointF_LinearAnimator *P,
+S	eGFX_PointF Target,
+S	eGFX_PointF *Current,
+S	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S	float IncrementX,
+S	float IncrementY
+S	);
+S
+S
+S
+S//Initializes and adds a scalarf linear animator and adds it to the list
+S//returns true if successful, false if not
+Suint32_t eGFX_AddPointF_LinearAnimator(eGFX_PointF_LinearAnimator *P,
+S	eGFX_PointF Target,
+S	eGFX_PointF *Current,
+S	uint32_t LastStep,			//Maximum Allow Steps before forced convergence
+S	float IncrementX,
+S	float IncrementY
+S	);
+S
+S
+Svoid eGFX_ProcessPointF_LinearAnimator(eGFX_PointF_LinearAnimator *P);
+S
+S
+S
+S
+S
+S										
+S/***
+S *       ____  ____       _ ______ _____ _______            _____ _____ 
+S *      / __ \|  _ \     | |  ____/ ____|__   __|     /\   |  __ \_   _|
+S *     | |  | | |_) |    | | |__ | |       | |       /  \  | |__) || |  
+S *     | |  | |  _ < _   | |  __|| |       | |      / /\ \ |  ___/ | |  
+S *     | |__| | |_) | |__| | |___| |____   | |     / ____ \| |    _| |_ 
+S *      \____/|____/ \____/|______\_____|  |_|    /_/    \_\_|   |_____|
+S *                                                                      
+S *                                                                      
+S */
+S		
+S//Call this when you are ready to draw all the objects on the list
+Svoid eGFX_DrawObjects(eGFX_ImagePlane * Image);
+S
+S//Adds a eGFX object to the list
+Suint32_t eGFX_AddObject(void * Object);
+S
+S//Clears all objects from the list
+Svoid eGFX_ClearObjects(void);
+S
+S//Gets the number of objects in the object list
+Suint32_t eGFX_GetAnimatorCount(void);
+S
+S//Disables rendering/processing of the object
+Svoid eGFX_DisableObject(void * Object);
+S
+S//enable rendering/processing of the object
+Svoid eGFX_EnableObject(void * Object);
+S
+S/***
+S*      _____        _   ___
+S*     |_   _|____ _| |_| __|
+S*       | |/ -_) \ /  _| _|
+S*       |_|\___/_\_\\__|_|
+S*
+S*/
+S
+S//Draws a TextF object onto an image Plane
+Svoid eGFX_DrawObject_TextF(eGFX_ImagePlane * Image, eGFX_Obj_TextF *TextF_Object);
+S
+S//Initializes a TextF object
+Svoid eGFX_InitObjectTextF(eGFX_Obj_TextF * TF,
+S							eGFX_PointF Position,
+S							eGFX_Font *Font,
+S							char * String
+S							);	
+S
+S//Initializes a TextF object and also adds it to the current draw list
+Svoid eGFX_AddObjectTextF(eGFX_Obj_TextF * TF,
+S						eGFX_PointF Position,
+S						eGFX_Font *Font,
+S						char * String
+S						);
+S
+S/***
+S*      ___ _            _        _   _____        _   ___
+S*     / __| |_  __ _ __| |___ __| | |_   _|____ _| |_| __|
+S*     \__ \ ' \/ _` / _` / -_) _` |   | |/ -_) \ /  _| _|
+S*     |___/_||_\__,_\__,_\___\__,_|   |_|\___/_\_\\__|_|
+S*
+S*/
+S
+Svoid eGFX_InitObjectShadedTextF(eGFX_Obj_ShadedTextF * TF,
+S	eGFX_PointF Position,
+S	eGFX_Font *Font,
+S	char * String,
+S	float Shading
+S	);
+S
+S
+Svoid eGFX_AddObjectShadedTextF(eGFX_Obj_ShadedTextF * TF,
+S	eGFX_PointF Position,
+S	eGFX_Font *Font,
+S	char * String,
+S	float Shading
+S	);
+S
+Svoid	eGFX_DrawObject_ShadedTextF(eGFX_ImagePlane * Image, eGFX_Obj_ShadedTextF *ShadedTextF_Object);
+S
+S						
+S/***
+S*      _    _          ___
+S*     | |  (_)_ _  ___| __|
+S*     | |__| | ' \/ -_) _|
+S*     |____|_|_||_\___|_|
+S*
+S*/
+S
+S//Initializes a LineF object
+Svoid eGFX_InitObjectLineF(eGFX_Obj_LineF * LF,
+S	eGFX_PointF Start,
+S	eGFX_PointF End,
+S	eGFX_PixelState PS
+S	);
+S
+S
+S//Initializes a LineF object and also adds it to the current draw list
+Svoid eGFX_AddObjectLineF(eGFX_Obj_LineF * LF,
+S	eGFX_PointF Start,
+S	eGFX_PointF End,
+S	eGFX_PixelState PS
+S	);
+S
+S
+S//Draws a LineF object onto an image Plane
+Svoid	eGFX_DrawObject_LineF(eGFX_ImagePlane * Image, eGFX_Obj_LineF *LineF_Object);
+S
+S/***
+S*      ___          _ _       ___
+S*     / __|_ __ _ _(_) |_ ___| __|
+S*     \__ \ '_ \ '_| |  _/ -_) _|
+S*     |___/ .__/_| |_|\__\___|_|
+S*         |_|
+S*/
+S
+S//Initializes a SpriteF object
+Svoid eGFX_InitObjectSpriteF(eGFX_Obj_SpriteF * S,
+S							eGFX_PointF Position,
+S							eGFX_ImagePlane *	Sprite
+S							);
+S
+S//Initializes a SpriteF object and adds it to the object list
+Svoid eGFX_AddObjectSpriteF(eGFX_Obj_SpriteF * S,
+S							eGFX_PointF Position,
+S							eGFX_ImagePlane *	Sprite
+S							);
+S
+S//draws a spritef onto an image plane
+Svoid	eGFX_DrawObject_SpriteF(eGFX_ImagePlane * Image, eGFX_Obj_SpriteF *SpriteF_Object);
+S
+S/***
+S*      ___          _ _       ___   ___          _        _
+S*     / __|_ __ _ _(_) |_ ___| __| / __| __ __ _| |___ __| |
+S*     \__ \ '_ \ '_| |  _/ -_) _|  \__ \/ _/ _` | / -_) _` |
+S*     |___/ .__/_| |_|\__\___|_|   |___/\__\__,_|_\___\__,_|
+S*         |_|
+S*/
+S
+S//Initializes a scaled sprited object
+Svoid eGFX_InitObjectScaledSpriteF(eGFX_Obj_ScaledSpriteF * S,
+S	eGFX_PointF Position,
+S	eGFX_ImagePlane *	Sprite,
+S	float Scale
+S	);
+S
+S
+S//Initializes a scaled sprited object and adds it to the object list
+Svoid eGFX_AddObjectScaledSpriteF(eGFX_Obj_ScaledSpriteF * S,
+S	eGFX_PointF Position,
+S	eGFX_ImagePlane *	Sprite,
+S	float Scale
+S	);
+S
+S//draws a scaled spritef onto an image plane
+Svoid	eGFX_DrawObject_ScaledSpriteF(eGFX_ImagePlane * Image, eGFX_Obj_ScaledSpriteF *SpriteF_Object);
+S
+S
+S/***
+S*       ___          ___
+S*      | _ ) _____ _| __|
+S*      | _ \/ _ \ \ / _|
+S*      |___/\___/_\_\_|
+S*
+S*/
+S
+S
+Svoid eGFX_InitObjectBoxF(eGFX_Obj_BoxF * BF,
+S	eGFX_PointF P1,
+S	eGFX_PointF P2,
+S	eGFX_PixelState PS,
+S	uint8_t BoxF_RenderOption
+S	);
+S
+S
+Svoid eGFX_AddObjectBoxF(eGFX_Obj_BoxF * BF,
+S	eGFX_PointF P1,
+S	eGFX_PointF P2,
+S	eGFX_PixelState PS,
+S	uint8_t BoxF_RenderOption
+S	);
+S
+S
+Svoid	eGFX_DrawObject_BoxF(eGFX_ImagePlane * Image, eGFX_Obj_BoxF *BoxF_Object);
+S
+S
+S/***
+S*       ___ _        _     ___
+S*      / __(_)_ _ __| |___| __|
+S*     | (__| | '_/ _| / -_) _|
+S*      \___|_|_| \__|_\___|_|
+S*
+S*/
+S
+S
+Svoid eGFX_InitObjectCircleF(eGFX_Obj_CircleF * CF,
+S	eGFX_PointF Position,
+S	float Radius,
+S	eGFX_PixelState PS,
+S	uint8_t CircleF_RenderOption
+S	);
+S
+S
+Svoid eGFX_AddObjectCircleF(eGFX_Obj_CircleF * CF,
+S	eGFX_PointF Position,
+S	float Radius,
+S	eGFX_PixelState PS,
+S	uint8_t CircleF_RenderOption
+S	);
+S
+Svoid	eGFX_DrawObject_CircleF(eGFX_ImagePlane * Image, eGFX_Obj_CircleF *CircleF_Object);
+S
+S
+N#endif
+N
+N
+N#ifdef __cplusplus
+S }
+N#endif
+N
+L 2 "SRC\eGFX\Fonts\FONT_5_7_1BPP.h" 2
+N
+N#ifndef _FONT_5_7_1BPP_H
+N#define _FONT_5_7_1BPP_H
+N
+Nextern const eGFX_Font FONT_5_7_1BPP;
+N
+N#endif
+N
+L 4 "SRC\eGFX\Fonts\FONT_5_7_1BPP.c" 2
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_space
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_space_Data[8] = { 
+N0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_space = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_space_Data,(uint16_t)5,(uint16_t)8};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_space = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_space_Data,(uint16_t)5,(uint16_t)8};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_exclamation_point
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_exclamation_point_Data[7] = { 
+N0x04,0x04,0x04,0x04,0x00,0x00,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_exclamation_point = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_exclamation_point_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_exclamation_point = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_exclamation_point_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_double_quotes
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_double_quotes_Data[7] = { 
+N0x0A,0x0A,0x0A,0x00,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_double_quotes = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_double_quotes_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_double_quotes = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_double_quotes_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_pound
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_pound_Data[7] = { 
+N0x0A,0x0A,0x1F,0x0A,0x1F,0x0A,0x0A }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_pound = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_pound_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_pound = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_pound_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_dollar_sign
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_dollar_sign_Data[7] = { 
+N0x04,0x1E,0x05,0x0E,0x14,0x0F,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_dollar_sign = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_dollar_sign_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_dollar_sign = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_dollar_sign_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_precent_sign
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_precent_sign_Data[7] = { 
+N0x03,0x13,0x08,0x04,0x02,0x19,0x18 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_precent_sign = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_precent_sign_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_precent_sign = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_precent_sign_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_ampersand
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_ampersand_Data[7] = { 
+N0x06,0x09,0x05,0x02,0x15,0x09,0x16 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_ampersand = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_ampersand_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_ampersand = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_ampersand_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_single_quote
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_single_quote_Data[7] = { 
+N0x06,0x04,0x02,0x00,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_single_quote = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_single_quote_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_single_quote = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_single_quote_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_left_parenthesis
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_left_parenthesis_Data[7] = { 
+N0x08,0x04,0x02,0x02,0x02,0x04,0x08 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_left_parenthesis = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_left_parenthesis_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_left_parenthesis = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_left_parenthesis_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_right_parenthesis
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_right_parenthesis_Data[7] = { 
+N0x02,0x04,0x08,0x08,0x08,0x04,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_right_parenthesis = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_right_parenthesis_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_right_parenthesis = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_right_parenthesis_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_star
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_star_Data[7] = { 
+N0x00,0x04,0x15,0x0E,0x15,0x04,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_star = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_star_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_star = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_star_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_plus
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_plus_Data[7] = { 
+N0x00,0x04,0x04,0x1F,0x04,0x04,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_plus = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_plus_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_plus = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_plus_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_comma
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_comma_Data[7] = { 
+N0x00,0x00,0x00,0x00,0x06,0x04,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_comma = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_comma_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_comma = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_comma_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_dash
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_dash_Data[7] = { 
+N0x00,0x00,0x00,0x1F,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_dash = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_dash_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_dash = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_dash_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_period
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_period_Data[7] = { 
+N0x00,0x00,0x00,0x00,0x00,0x06,0x06 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_period = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_period_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_period = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_period_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_forward_slash
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_forward_slash_Data[7] = { 
+N0x00,0x10,0x08,0x04,0x02,0x01,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_forward_slash = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_forward_slash_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_forward_slash = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_forward_slash_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_0
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_0_Data[7] = { 
+N0x0E,0x11,0x19,0x15,0x13,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_0 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_0_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_0 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_0_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_1
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_1_Data[7] = { 
+N0x04,0x06,0x04,0x04,0x04,0x04,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_1 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_1_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_1 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_1_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_2
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_2_Data[7] = { 
+N0x0E,0x11,0x10,0x08,0x04,0x02,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_2 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_2_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_2 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_2_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_3
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_3_Data[7] = { 
+N0x1F,0x08,0x04,0x08,0x10,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_3 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_3_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_3 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_3_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_4
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_4_Data[7] = { 
+N0x08,0x0C,0x0A,0x09,0x1F,0x08,0x08 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_4 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_4_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_4 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_4_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_5
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_5_Data[7] = { 
+N0x1F,0x01,0x0F,0x10,0x10,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_5 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_5_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_5 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_5_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_6
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_6_Data[7] = { 
+N0x0C,0x02,0x01,0x0F,0x11,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_6 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_6_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_6 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_6_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_7
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_7_Data[7] = { 
+N0x1F,0x10,0x08,0x04,0x02,0x02,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_7 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_7_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_7 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_7_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_8
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_8_Data[7] = { 
+N0x0E,0x11,0x11,0x0E,0x11,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_8 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_8_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_8 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_8_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_9
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_9_Data[7] = { 
+N0x0E,0x11,0x11,0x1E,0x10,0x08,0x06 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_9 = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_9_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_9 = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_9_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_colon
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_colon_Data[7] = { 
+N0x00,0x06,0x06,0x00,0x06,0x06,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_colon = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_colon_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_colon = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_colon_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_semicolon
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_semicolon_Data[7] = { 
+N0x00,0x06,0x06,0x00,0x06,0x04,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_semicolon = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_semicolon_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_semicolon = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_semicolon_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_less_than
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_less_than_Data[7] = { 
+N0x08,0x04,0x02,0x01,0x02,0x04,0x08 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_less_than = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_less_than_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_less_than = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_less_than_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_equals
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_equals_Data[7] = { 
+N0x00,0x00,0x1F,0x00,0x1F,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_equals = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_equals_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_equals = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_equals_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_great_than
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_great_than_Data[7] = { 
+N0x02,0x04,0x08,0x10,0x08,0x04,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_great_than = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_great_than_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_great_than = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_great_than_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_question_mark
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_question_mark_Data[7] = { 
+N0x0E,0x11,0x10,0x08,0x04,0x00,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_question_mark = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_question_mark_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_question_mark = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_question_mark_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_at
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_at_Data[7] = { 
+N0x0E,0x11,0x10,0x16,0x15,0x15,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_at = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_at_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_at = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_at_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_A
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_A_Data[7] = { 
+N0x0E,0x11,0x11,0x11,0x1F,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_A = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_A_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_A = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_A_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_B
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_B_Data[7] = { 
+N0x0F,0x11,0x11,0x0F,0x11,0x11,0x0F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_B = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_B_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_B = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_B_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_C
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_C_Data[7] = { 
+N0x0E,0x11,0x01,0x01,0x01,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_C = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_C_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_C = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_C_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_D
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_D_Data[7] = { 
+N0x07,0x09,0x11,0x11,0x11,0x09,0x07 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_D = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_D_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_D = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_D_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_E
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_E_Data[7] = { 
+N0x1F,0x01,0x01,0x0F,0x01,0x01,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_E = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_E_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_E = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_E_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_F
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_F_Data[7] = { 
+N0x1F,0x01,0x01,0x0F,0x01,0x01,0x01 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_F = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_F_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_F = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_F_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_G
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_G_Data[7] = { 
+N0x0E,0x11,0x01,0x1D,0x11,0x11,0x1E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_G = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_G_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_G = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_G_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_H
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_H_Data[7] = { 
+N0x11,0x11,0x11,0x1F,0x11,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_H = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_H_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_H = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_H_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_I
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_I_Data[7] = { 
+N0x0E,0x04,0x04,0x04,0x04,0x04,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_I = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_I_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_I = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_I_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_J
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_J_Data[7] = { 
+N0x1C,0x08,0x08,0x08,0x08,0x09,0x06 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_J = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_J_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_J = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_J_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_K
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_K_Data[7] = { 
+N0x11,0x09,0x05,0x03,0x05,0x09,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_K = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_K_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_K = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_K_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_L
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_L_Data[7] = { 
+N0x01,0x01,0x01,0x01,0x01,0x01,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_L = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_L_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_L = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_L_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_M
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_M_Data[7] = { 
+N0x11,0x1B,0x15,0x15,0x11,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_M = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_M_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_M = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_M_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_N
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_N_Data[7] = { 
+N0x11,0x11,0x13,0x15,0x19,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_N = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_N_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_N = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_N_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_O
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_O_Data[7] = { 
+N0x0E,0x11,0x11,0x11,0x11,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_O = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_O_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_O = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_O_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_P
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_P_Data[7] = { 
+N0x0F,0x11,0x11,0x0F,0x01,0x01,0x01 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_P = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_P_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_P = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_P_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_Q
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_Q_Data[7] = { 
+N0x0E,0x11,0x11,0x11,0x15,0x09,0x16 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_Q = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_Q_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_Q = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_Q_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_R
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_R_Data[7] = { 
+N0x0F,0x11,0x11,0x0F,0x05,0x09,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_R = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_R_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_R = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_R_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_S
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_S_Data[7] = { 
+N0x1E,0x01,0x01,0x0E,0x10,0x10,0x0F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_S = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_S_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_S = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_S_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_T
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_T_Data[7] = { 
+N0x1F,0x04,0x04,0x04,0x04,0x04,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_T = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_T_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_T = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_T_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_U
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_U_Data[7] = { 
+N0x11,0x11,0x11,0x11,0x11,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_U = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_U_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_U = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_U_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_V
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_V_Data[7] = { 
+N0x11,0x11,0x11,0x11,0x11,0x0A,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_V = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_V_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_V = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_V_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_W
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_W_Data[7] = { 
+N0x11,0x11,0x11,0x15,0x15,0x15,0x0A }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_W = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_W_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_W = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_W_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_X
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_X_Data[7] = { 
+N0x11,0x11,0x0A,0x04,0x0A,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_X = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_X_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_X = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_X_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_Y
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_Y_Data[7] = { 
+N0x11,0x11,0x11,0x0A,0x04,0x04,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_Y = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_Y_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_Y = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_Y_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_uc_Z
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_uc_Z_Data[7] = { 
+N0x1F,0x10,0x08,0x04,0x02,0x01,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_Z = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_Z_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_uc_Z = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_uc_Z_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_left_bracket
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_left_bracket_Data[7] = { 
+N0x0E,0x02,0x02,0x02,0x02,0x02,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_left_bracket = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_left_bracket_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_left_bracket = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_left_bracket_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_backslash
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_backslash_Data[7] = { 
+N0x00,0x01,0x02,0x04,0x08,0x10,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_backslash = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_backslash_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_backslash = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_backslash_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_right_bracket
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_right_bracket_Data[7] = { 
+N0x0E,0x08,0x08,0x08,0x08,0x08,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_right_bracket = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_right_bracket_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_right_bracket = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_right_bracket_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_carret
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_carret_Data[7] = { 
+N0x04,0x0A,0x11,0x00,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_carret = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_carret_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_carret = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_carret_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_underscore
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_underscore_Data[7] = { 
+N0x00,0x00,0x00,0x00,0x00,0x00,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_underscore = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_underscore_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_underscore = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_underscore_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_slanted_single_quote
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_slanted_single_quote_Data[7] = { 
+N0x02,0x04,0x08,0x00,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_slanted_single_quote = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_slanted_single_quote_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_slanted_single_quote = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_slanted_single_quote_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_a
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_a_Data[7] = { 
+N0x00,0x00,0x0E,0x10,0x1E,0x11,0x1E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_a = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_a_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_a = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_a_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_b
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_b_Data[7] = { 
+N0x01,0x01,0x0D,0x13,0x11,0x11,0x0F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_b = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_b_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_b = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_b_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_c
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_c_Data[7] = { 
+N0x00,0x00,0x0E,0x01,0x01,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_c = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_c_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_c = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_c_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_d
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_d_Data[7] = { 
+N0x10,0x10,0x16,0x19,0x11,0x11,0x1E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_d = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_d_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_d = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_d_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_e
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_e_Data[7] = { 
+N0x00,0x00,0x0E,0x11,0x1F,0x01,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_e = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_e_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_e = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_e_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_f
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_f_Data[7] = { 
+N0x0C,0x12,0x02,0x07,0x02,0x02,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_f = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_f_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_f = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_f_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_g
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_g_Data[7] = { 
+N0x00,0x1E,0x11,0x11,0x1E,0x10,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_g = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_g_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_g = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_g_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_h
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_h_Data[7] = { 
+N0x01,0x01,0x0D,0x13,0x11,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_h = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_h_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_h = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_h_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_i
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_i_Data[7] = { 
+N0x04,0x00,0x06,0x04,0x04,0x04,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_i = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_i_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_i = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_i_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_j
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_j_Data[7] = { 
+N0x08,0x00,0x0C,0x08,0x08,0x09,0x06 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_j = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_j_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_j = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_j_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_k
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_k_Data[7] = { 
+N0x01,0x01,0x09,0x05,0x03,0x05,0x09 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_k = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_k_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_k = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_k_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_l
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_l_Data[7] = { 
+N0x06,0x04,0x04,0x04,0x04,0x04,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_l = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_l_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_l = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_l_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_m
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_m_Data[7] = { 
+N0x00,0x00,0x0B,0x15,0x15,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_m = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_m_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_m = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_m_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_n
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_n_Data[7] = { 
+N0x00,0x00,0x0D,0x13,0x11,0x11,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_n = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_n_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_n = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_n_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_o
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_o_Data[7] = { 
+N0x00,0x00,0x0E,0x11,0x11,0x11,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_o = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_o_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_o = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_o_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_p
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_p_Data[7] = { 
+N0x00,0x00,0x0F,0x11,0x0F,0x01,0x01 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_p = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_p_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_p = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_p_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_q
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_q_Data[7] = { 
+N0x00,0x00,0x16,0x19,0x1E,0x10,0x10 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_q = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_q_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_q = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_q_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_r
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_r_Data[7] = { 
+N0x00,0x00,0x0D,0x13,0x01,0x01,0x01 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_r = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_r_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_r = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_r_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_s
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_s_Data[7] = { 
+N0x00,0x00,0x0E,0x01,0x0E,0x10,0x0F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_s = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_s_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_s = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_s_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_t
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_t_Data[7] = { 
+N0x02,0x02,0x07,0x02,0x02,0x12,0x0C }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_t = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_t_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_t = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_t_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_u
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_u_Data[7] = { 
+N0x00,0x00,0x11,0x11,0x11,0x19,0x16 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_u = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_u_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_u = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_u_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_v
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_v_Data[7] = { 
+N0x00,0x00,0x11,0x11,0x11,0x0A,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_v = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_v_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_v = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_v_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_w
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_w_Data[7] = { 
+N0x00,0x00,0x11,0x11,0x15,0x15,0x0A }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_w = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_w_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_w = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_w_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_x
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_x_Data[7] = { 
+N0x00,0x00,0x11,0x0A,0x04,0x0A,0x11 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_x = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_x_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_x = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_x_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_y
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_y_Data[7] = { 
+N0x00,0x00,0x11,0x11,0x1E,0x10,0x0E }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_y = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_y_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_y = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_y_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_lc_z
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_lc_z_Data[7] = { 
+N0x00,0x00,0x1F,0x08,0x04,0x02,0x1F }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_z = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_z_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_lc_z = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_lc_z_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_left_curly_brace
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_left_curly_brace_Data[7] = { 
+N0x08,0x04,0x04,0x02,0x04,0x04,0x08 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_left_curly_brace = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_left_curly_brace_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_left_curly_brace = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_left_curly_brace_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_vertical_bar
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_vertical_bar_Data[7] = { 
+N0x04,0x04,0x04,0x04,0x04,0x04,0x04 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_vertical_bar = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_vertical_bar_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_vertical_bar = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_vertical_bar_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_right_curly_brace
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_right_curly_brace_Data[7] = { 
+N0x02,0x04,0x04,0x08,0x04,0x04,0x02 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_right_curly_brace = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_right_curly_brace_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_right_curly_brace = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_right_curly_brace_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_tilde
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_tilde_Data[7] = { 
+N0x10,0x0E,0x01,0x00,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_tilde = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_tilde_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_tilde = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_tilde_Data,(uint16_t)5,(uint16_t)7};
+N
+N////***************************************************************************
+N////                            FONT_5_7_1BPP_FontElement_delete
+N////***************************************************************************
+N
+Nconst uint8_t FONT_5_7_1BPP_FontElement_delete_Data[7] = { 
+N0x00,0x00,0x00,0x00,0x00,0x00,0x00 }; 
+N
+Nconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_delete = { eGFX_IMAGE_PLANE_1BPP,(uint8_t *)&FONT_5_7_1BPP_FontElement_delete_Data,(uint16_t)5,(uint16_t)7};
+Xconst eGFX_ImagePlane FONT_5_7_1BPP_FontElement_delete = { 0,(uint8_t *)&FONT_5_7_1BPP_FontElement_delete_Data,(uint16_t)5,(uint16_t)7};
+N
+N
+Nconst eGFX_Font FONT_5_7_1BPP = { 
+N							{
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_space,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_exclamation_point,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_double_quotes,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_pound,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_dollar_sign,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_precent_sign,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_ampersand,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_single_quote,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_left_parenthesis,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_right_parenthesis,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_star,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_plus,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_comma,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_dash,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_period,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_forward_slash,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_0,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_1,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_2,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_3,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_4,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_5,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_6,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_7,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_8,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_9,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_colon,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_semicolon,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_less_than,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_equals,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_great_than,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_question_mark,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_at,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_A,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_B,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_C,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_D,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_E,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_F,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_G,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_H,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_I,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_J,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_K,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_L,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_M,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_N,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_O,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_P,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_Q,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_R,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_S,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_T,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_U,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_V,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_W,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_X,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_Y,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_uc_Z,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_left_bracket,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_backslash,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_right_bracket,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_carret,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_underscore,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_slanted_single_quote,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_a,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_b,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_c,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_d,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_e,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_f,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_g,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_h,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_i,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_j,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_k,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_l,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_m,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_n,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_o,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_p,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_q,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_r,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_s,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_t,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_u,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_v,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_w,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_x,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_y,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_lc_z,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_left_curly_brace,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_vertical_bar,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_right_curly_brace,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_tilde,
+N								(const eGFX_ImagePlane *)&FONT_5_7_1BPP_FontElement_delete
+N							},
+N							0, //TT Metric : Ascent - Scaled up by 65536 (q15.16) 
+N							0, //TT Metric : Descent - Scaled up by 65536 (q15.16)
+N							0, //TT Metric : Linespacing -Scaled up by 65536 (q15,16)
+N							4, //Spaces per tab
+N							1, //InterCharacterSpacing
+N							{0,0} //Padding Bytes
+N						};

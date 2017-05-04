@@ -1,0 +1,3 @@
+L 1 "C:\TouchGFXProjects\Button\generated\fonts\src\Font_verdana_20_4bpp.cpp"
+C "C:\TouchGFXProjects\Button\generated\fonts\src\Font_verdana_20_4bpp.cpp" 1 34 cannot open source input file "touchgfx/hal/Types.hpp": No such file or directory
+N#include <touchgfx/hal/Types.hpp>

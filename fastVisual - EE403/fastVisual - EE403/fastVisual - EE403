@@ -1,0 +1,603 @@
+
+#include "board.h"
+#include "fsl_debug_console.h"
+#include "fsl_emc.h"
+#include "pin_mux.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+#include "eGFX.h"
+#include "eGFX_Driver.h"
+#include "FONT_5_7_1BPP.h"
+#include "pin_mux.h"
+#include "fsl_device_registers.h"
+#include "fsl_i2c.h"
+#include "fsl_i2s.h"
+#include "fsl_wm8904.h"
+#include "Audio.h"
+#include "fsl_iocon.h"
+#include "fsl_common.h"
+#include "clock_config.h"
+#include "fsl_power.h"
+
+#include "fsl_i2c.h"
+#include "fsl_ft5406.h"
+
+#include "arm_math.h"
+
+
+#include "Sprites_16BPP_565.h"
+
+#include "OCR_A_Extended__20px__Bold__SingleBitPerPixelGridFit_1BPP.h"
+#include "Consolas__26px__Regular__AntiAliasGridFit_1BPP.h"
+#include "Magneto__26px__Regular__AntiAliasGridFit_16BPP_565.h" 
+
+ 
+#define SLIDER_REGION_START_X	 50
+#define SLIDER_REGION_STOP_X	 SLIDER_REGION_START_X+Sprite_16BPP_565_Mushroom___1UP.SizeX
+#define SLIDER_REGION_START_Y  50
+#define SLIDER_REGION_STOP_Y	 (eGFX_PHYSICAL_SCREEN_SIZE_Y - 50)
+
+#define SLIDER2_REGION_START_X	 125
+#define SLIDER2_REGION_STOP_X	 SLIDER2_REGION_START_X+Sprite_16BPP_565_Mushroom___1UP.SizeX
+#define SLIDER2_REGION_START_Y  50
+#define SLIDER2_REGION_STOP_Y	 (eGFX_PHYSICAL_SCREEN_SIZE_Y - 50)
+
+#define SLIDER3_REGION_START_X	 200
+#define SLIDER3_REGION_STOP_X	 SLIDER3_REGION_START_X+Sprite_16BPP_565_Mushroom___1UP.SizeX
+#define SLIDER3_REGION_START_Y  50
+#define SLIDER3_REGION_STOP_Y	 (eGFX_PHYSICAL_SCREEN_SIZE_Y - 50)
+
+#define SLIDER4_REGION_START_X	 275
+#define SLIDER4_REGION_STOP_X	 SLIDER4_REGION_START_X+Sprite_16BPP_565_Mushroom___1UP.SizeX
+#define SLIDER4_REGION_START_Y  50
+#define SLIDER4_REGION_STOP_Y	 (eGFX_PHYSICAL_SCREEN_SIZE_Y - 50)
+
+#define  BUFFER_SIZE  									 1024
+
+volatile float * MicBuffer;					
+volatile float * BackgroundMicBuffer; 
+
+uint32_t BackgroundBufferIdx = 0;     
+
+volatile float MicBuffer1[BUFFER_SIZE];  
+volatile float MicBuffer2[BUFFER_SIZE];
+volatile uint32_t NextBufferReady = 0;
+
+
+uint32_t BuffersCaptured = 0;  /*We are using this to keep track of how many
+data buffers we have captured for display*/
+
+
+void DMIC0_IRQHandler()
+{
+	int16_t NextSampleIn;
+	
+	if(DMIC0->CHANNEL[1].FIFO_STATUS & DMIC_CHANNEL_FIFO_STATUS_INT_MASK)
+	{
+		DMIC0->CHANNEL[1].FIFO_STATUS |= DMIC_CHANNEL_FIFO_STATUS_INT_MASK;
+
+		
+		NextSampleIn = (int16_t)(DMIC0->CHANNEL[1].FIFO_DATA);
+	
+    BackgroundMicBuffer[BackgroundBufferIdx] =  (float)((NextSampleIn))  / 
+((float)(1<<15));
+		
+		BackgroundBufferIdx++;
+
+		if(BackgroundBufferIdx == BUFFER_SIZE)
+		{
+			  
+
+/* Swap Buffers */
+			if(BackgroundMicBuffer == MicBuffer1)
+				{
+					BackgroundMicBuffer = MicBuffer2;
+					MicBuffer = MicBuffer1;
+				}
+				else
+				{
+					BackgroundMicBuffer = MicBuffer1;
+					MicBuffer = MicBuffer2;
+				}
+
+				/*Set a flag to inidicate that the buffer is ready!*/
+				if(NextBufferReady == 0)
+					NextBufferReady = 1;
+				
+				/*Reset our index that will fill up the background buffer*/
+	  		BackgroundBufferIdx=0;
+	  }
+  }
+}
+
+void InitMicBuffers()
+{
+	for (int i=0;i<BUFFER_SIZE;i++)
+	{
+		MicBuffer1[i] = 0;
+		MicBuffer2[i] = 0;
+	}
+
+	MicBuffer = MicBuffer1;
+
+	BackgroundMicBuffer = MicBuffer2;
+
+	NextBufferReady = 0;
+}
+
+arm_rfft_fast_instance_f32 MyFFT;
+
+float	 FFT_RawDataOut[BUFFER_SIZE];
+
+float  FFT_PowerSpectrum[BUFFER_SIZE];
+
+/* Systick Interrupt */
+#define TEST1_PORT 4
+#define TEST1_PIN  6
+
+#define TEST2_PORT 3
+#define TEST2_PIN  21
+
+void SysTick_Handler()
+{
+	GPIO->NOT[TEST1_PORT] = 1<<TEST1_PIN;
+}
+
+enum states{
+			Home = 0,
+			Visual1 = 1,
+			Visual2 = 2,
+			EQ = 3
+		};
+
+int mode;
+
+	
+int main(void)
+{
+	
+    CLOCK_EnableClock(kCLOCK_InputMux);
+		
+    CLOCK_EnableClock(kCLOCK_Iocon);
+	
+    CLOCK_EnableClock(kCLOCK_Gpio0);
+  
+    CLOCK_EnableClock(kCLOCK_Gpio1);
+		
+    CLOCK_EnableClock(kCLOCK_Gpio2);
+  
+    CLOCK_EnableClock(kCLOCK_Gpio3);
+			
+    CLOCK_EnableClock(kCLOCK_Gpio4);
+
+  	/* USART0 clock */
+    CLOCK_AttachClk(BOARD_DEBUG_UART_CLK_ATTACH);
+
+    /* Initialize the rest */
+    BOARD_InitPins();
+	
+	
+		/*
+			 This function is implemented abocce.  This will get the CPU running at 180Mhz.
+		*/
+	
+    BOARD_BootClock_PLL_RUN();
+  
+    BOARD_InitDebugConsole();
+		
+		InitMicBuffers();
+		
+		Init_DMIC();
+		
+		IOCON_PinMuxSet(IOCON, TEST1_PORT, TEST1_PIN, IOCON_FUNC0 |
+IOCON_MODE_INACT| IOCON_DIGITAL_EN);
+
+    IOCON_PinMuxSet(IOCON, TEST2_PORT, TEST2_PIN, IOCON_FUNC0 |
+IOCON_MODE_INACT| IOCON_DIGITAL_EN);
+		
+	  GPIO->DIR[TEST1_PORT] |= 1<<TEST1_PIN;
+	 
+	  GPIO->DIR[TEST2_PORT] |= 1<<TEST2_PIN;
+	 
+	  SysTick_Config(SystemCoreClock/1000);
+	  arm_rfft_fast_init_f32(&MyFFT,1024);
+		BOARD_InitSPIFI_ExternalFlash();
+
+		BOARD_InitSDRAM();
+
+		eGFX_InitDriver();
+	
+  	int32_t x=10,y=10;
+	  int32_t x2=10,y2=10;
+		int32_t x3=10,y3=10;
+	  int32_t x4=10,y4=10;
+		int32_t x5=10,y5=10;
+	
+	  int32_t BassSliderPosition = (SLIDER_REGION_STOP_Y + SLIDER_REGION_START_Y)/2;
+	  int32_t MidSliderPosition = (SLIDER2_REGION_STOP_Y + SLIDER2_REGION_START_Y)/2;
+		int32_t TrebleSliderPosition = (SLIDER3_REGION_STOP_Y + SLIDER3_REGION_START_Y)/2;
+		int32_t VolumeSliderPosition = (SLIDER4_REGION_STOP_Y + SLIDER4_REGION_START_Y)/2;
+	
+	
+    ft5406_handle_t touch_handle;
+   
+		touch_event_t touch_event;
+		
+		FT5406_Init(&touch_handle,I2C2);
+		
+		/*
+		mode = 0;
+		
+		switch(mode){
+			case '0':
+				printf("Welcome to our Visualizer");
+				break;
+			case '1':
+				break;
+			case '2':
+			case '3':
+				break;
+			default: mode = 0;
+		*/
+		
+			eGFX_ImagePlane_Clear(&eGFX_BackBuffer);
+		
+			// Case 1 - EQ
+        if (kStatus_Success == FT5406_GetSingleTouch(&touch_handle, &touch_event, &y, &x))
+        {
+            if (touch_event == kTouch_Contact)
+            {
+								//Check to see if we are in the slider area
+							  if(	 x>=SLIDER_REGION_START_X && x<=SLIDER_REGION_STOP_X 
+									&& y>SLIDER_REGION_START_Y && y<= SLIDER_REGION_STOP_Y)
+								{
+										//Store the Value
+										BassSliderPosition = y;
+								}
+            }
+        }
+				
+				if (kStatus_Success == FT5406_GetSingleTouch(&touch_handle, &touch_event, &y2, &x2))
+        {
+            if (touch_event == kTouch_Contact)
+            {
+								//Check to see if we are in the slider area
+							  if(	 x2>=SLIDER2_REGION_START_X && x2<=SLIDER2_REGION_STOP_X 
+									&& y2>SLIDER2_REGION_START_Y && y2<= SLIDER2_REGION_STOP_Y)
+								{
+										//Store the Value
+										MidSliderPosition = y2;
+								}
+            }
+        }
+				
+				if (kStatus_Success == FT5406_GetSingleTouch(&touch_handle, &touch_event, &y3, &x3))
+        {
+            if (touch_event == kTouch_Contact)
+            {
+								//Check to see if we are in the slider area
+							  if(	 x2>=SLIDER3_REGION_START_X && x2<=SLIDER3_REGION_STOP_X 
+									&& y2>SLIDER3_REGION_START_Y && y2<= SLIDER3_REGION_STOP_Y)
+								{
+										//Store the Value
+										TrebleSliderPosition = y3;
+								}
+            }
+        }
+				
+				if (kStatus_Success == FT5406_GetSingleTouch(&touch_handle, &touch_event, &y4, &x4))
+        {
+            if (touch_event == kTouch_Contact)
+            {
+								//Check to see if we are in the slider area
+							  if(	 x2>=SLIDER4_REGION_START_X && x2<=SLIDER4_REGION_STOP_X 
+									&& y2>SLIDER4_REGION_START_Y && y2<= SLIDER4_REGION_STOP_Y)
+								{
+										//Store the Value
+										VolumeSliderPosition = y4;
+								}
+            }
+        }
+				
+				// Case 2 - Visualizer 1 - Cracked
+				if (kStatus_Success == FT5406_GetSingleTouch(&touch_handle, &touch_event, &y5, &x5))
+        {
+            if (touch_event == kTouch_Down)
+            {
+								//Check to see if we are in the slider area
+							  if(	 x5>=300
+									&& y5>0)
+								{
+										//Store the Value
+											if(NextBufferReady == 1)
+												{
+	
+													GPIO->SET[TEST2_PORT]=1<<TEST2_PIN;
+													
+													arm_rfft_fast_f32(&MyFFT,
+																							(float *)MicBuffer,
+																							FFT_RawDataOut,0);
+													
+													GPIO->CLR[TEST2_PORT]=1<<TEST2_PIN;
+																							
+													 arm_cmplx_mag_squared_f32(FFT_RawDataOut,
+																										 FFT_PowerSpectrum,
+																										 BUFFER_SIZE/2
+																										);
+																			
+													 eGFX_ImagePlane_Clear(&eGFX_BackBuffer);
+													
+																							for(int i=0;i<eGFX_PHYSICAL_SCREEN_SIZE_X;i++)
+				{
+																	float Point1 = (MicBuffer[i-1]*(eGFX_PHYSICAL_SCREEN_SIZE_X/2));
+
+																	float Point2 = (MicBuffer[i]*(eGFX_PHYSICAL_SCREEN_SIZE_Y/2));
+																	
+																	float Point3 = (MicBuffer[i-1]*(eGFX_PHYSICAL_SCREEN_SIZE_X/1.5));
+
+																	float Point4 = -(MicBuffer[i]*(eGFX_PHYSICAL_SCREEN_SIZE_Y/2));
+																	
+																	float Point5 = -(MicBuffer[i-1]*(eGFX_PHYSICAL_SCREEN_SIZE_X/2));
+
+																	float Point6 = (MicBuffer[i]*(eGFX_PHYSICAL_SCREEN_SIZE_Y/3));
+														
+														if (i < 200)
+																	/* Green*/
+																	{
+																		eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(0,128,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(0,128,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(0,128,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(0,128,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(0,128,0)  												
+																					);	
+																}		
+													else if (i >= 200 & i < 300)
+																	/* Yellow */
+																	{
+																		
+																		eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(255,255,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(255,255,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(255,255,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,									
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(255,255,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,									
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(255,255,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,									
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/15,																					
+																					eGFX_RGB888_TO_RGB565(255,255,0)  												
+																					);	
+																				}
+																else
+																	/* Red */
+																	{
+																		eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/12,																					
+																					eGFX_RGB888_TO_RGB565(255,0,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/2.0,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/12,																					
+																					eGFX_RGB888_TO_RGB565(255,0,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point1+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,									
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/14,																					
+																					eGFX_RGB888_TO_RGB565(255,0,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_X/1.33,									
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/12,																					
+																					eGFX_RGB888_TO_RGB565(255,0,0)  												
+																					);				
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,									
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/12,																					
+																					eGFX_RGB888_TO_RGB565(255,0,0)  												
+																					);	
+																	eGFX_DrawHline(&eGFX_BackBuffer,                       
+																					Point4+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,
+																					Point2+eGFX_PHYSICAL_SCREEN_SIZE_X/4.0,									
+																					Point5+eGFX_PHYSICAL_SCREEN_SIZE_Y/2.0 - FFT_PowerSpectrum[i]/12,																					
+																					eGFX_RGB888_TO_RGB565(255,0,0)  												
+																					);	
+																				}
+													}	
+													
+													
+																							
+													eGFX_Dump(&eGFX_BackBuffer);
+														
+													NextBufferReady = 0;
+			}
+								}
+            }
+        }
+
+
+
+	
+				//The variable MonkeySliderPosition is the X coordinate of the slider.  
+				//Let's normalize this value to 0 to 1.0 so we can easily rescale to something else later.
+				
+				float	BassSliderValue =  (float)(BassSliderPosition - SLIDER_REGION_START_Y)/(float)(SLIDER_REGION_STOP_Y-SLIDER_REGION_START_Y);
+				float	MidSliderValue =  (float)(MidSliderPosition - SLIDER2_REGION_START_Y)/(float)(SLIDER2_REGION_STOP_Y-SLIDER2_REGION_START_Y);
+				float	TrebleSliderValue =  (float)(TrebleSliderPosition - SLIDER3_REGION_START_Y)/(float)(SLIDER3_REGION_STOP_Y-SLIDER3_REGION_START_Y);
+				float	VolumeSliderValue =  (float)(VolumeSliderPosition - SLIDER4_REGION_START_Y)/(float)(SLIDER4_REGION_STOP_Y-SLIDER4_REGION_START_Y);
+				//Render the Slider
+				
+				//First, let's draw a box for the slider fill.   There is eGFX function to make a box
+				
+				eGFX_Box SliderFillBox;
+
+				//Since the monkey sprite has some size to it,  we render the slider a little longer so the head always appears on the slider.
+				SliderFillBox.P1.Y = SLIDER_REGION_START_Y - Sprite_16BPP_565_Mushroom___1UP.SizeY/2;   
+				SliderFillBox.P1.X = (SLIDER_REGION_STOP_X+SLIDER_REGION_START_X)/2 - 5;
+				SliderFillBox.P2.Y= BassSliderPosition;
+				SliderFillBox.P2.X= (SLIDER_REGION_STOP_X+SLIDER_REGION_START_X)/2 + 5;
+				
+				eGFX_DrawFilledBox(&eGFX_BackBuffer,&SliderFillBox,eGFX_RGB888_TO_RGB565(0,128,0));
+				
+				//Now let's draw the monkey head. The "blit" function just copies one ImagePlane to another.
+				//In this case we will copy the monkey head to our back buffer
+				
+				eGFX_Blit(&eGFX_BackBuffer,
+								SLIDER_REGION_START_X,
+								BassSliderPosition - Sprite_16BPP_565_Mushroom___1UP.SizeY/2 + 1,																			 //y coordinate of where to put the monkey head
+								&Sprite_16BPP_565_Mushroom___1UP);																								
+			
+			
+			  //Let's draw some lines on the left and right to define our boundaries
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER_REGION_START_Y,SLIDER_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2+1,SLIDER_REGION_START_Y,SLIDER_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER_REGION_START_Y,SLIDER_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2-1,SLIDER_REGION_START_Y,SLIDER_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				
+				// Band 2 - Yellow
+				//First, let's draw a box for the slider fill.   There is eGFX function to make a box
+				
+				eGFX_Box SliderFillBox2;
+
+				//Since the monkey sprite has some size to it,  we render the slider a little longer so the head always appears on the slider.
+				SliderFillBox2.P1.Y = SLIDER2_REGION_START_Y - Sprite_16BPP_565_Mushroom___1UP.SizeY/2;   
+				SliderFillBox2.P1.X = (SLIDER2_REGION_STOP_X+SLIDER2_REGION_START_X)/2 - 5;
+				SliderFillBox2.P2.Y= MidSliderPosition;
+				SliderFillBox2.P2.X= (SLIDER2_REGION_STOP_X+SLIDER2_REGION_START_X)/2 + 5;
+				
+				eGFX_DrawFilledBox(&eGFX_BackBuffer,&SliderFillBox2,eGFX_RGB888_TO_RGB565(255,255,0));
+				
+				//Now let's draw the monkey head. The "blit" function just copies one ImagePlane to another.
+				//In this case we will copy the monkey head to our back buffer
+				
+				eGFX_Blit(&eGFX_BackBuffer,
+								SLIDER2_REGION_START_X,
+								MidSliderPosition - Sprite_16BPP_565_Mushroom___1UP.SizeY/2 + 1,																			 //y coordinate of where to put the monkey head
+								&Sprite_16BPP_565_Mushroom___1UP);																								
+			
+			
+			  //Let's draw some lines on the left and right to define our boundaries
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER2_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER2_REGION_START_Y,SLIDER2_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER2_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2+1,SLIDER2_REGION_START_Y,SLIDER2_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER2_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER2_REGION_START_Y,SLIDER2_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER2_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2-1,SLIDER2_REGION_START_Y,SLIDER2_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				
+				// Band 3 - Red
+				//First, let's draw a box for the slider fill.   There is eGFX function to make a box
+				
+				eGFX_Box SliderFillBox3;
+
+				//Since the monkey sprite has some size to it,  we render the slider a little longer so the head always appears on the slider.
+				SliderFillBox3.P1.Y = SLIDER3_REGION_START_Y - Sprite_16BPP_565_Mushroom___1UP.SizeY/2;   
+				SliderFillBox3.P1.X = (SLIDER3_REGION_STOP_X+SLIDER3_REGION_START_X)/2 - 5;
+				SliderFillBox3.P2.Y= TrebleSliderPosition;
+				SliderFillBox3.P2.X= (SLIDER3_REGION_STOP_X+SLIDER3_REGION_START_X)/2 + 5;
+				
+				eGFX_DrawFilledBox(&eGFX_BackBuffer,&SliderFillBox3,eGFX_RGB888_TO_RGB565(255,0,0));
+				
+				//Now let's draw the monkey head. The "blit" function just copies one ImagePlane to another.
+				//In this case we will copy the monkey head to our back buffer
+				
+				eGFX_Blit(&eGFX_BackBuffer,
+								SLIDER3_REGION_START_X,
+								TrebleSliderPosition - Sprite_16BPP_565_Mushroom___1UP.SizeY/2 + 1,																			 //y coordinate of where to put the monkey head
+								&Sprite_16BPP_565_Mushroom___1UP);																								
+			
+			
+			  //Let's draw some lines on the left and right to define our boundaries
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER3_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER3_REGION_START_Y,SLIDER3_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER3_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2+1,SLIDER3_REGION_START_Y,SLIDER3_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER3_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER3_REGION_START_Y,SLIDER3_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER3_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2-1,SLIDER3_REGION_START_Y,SLIDER3_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+			  
+				// Band 4 - Blue
+				//First, let's draw a box for the slider fill.   There is eGFX function to make a box
+				
+				eGFX_Box SliderFillBox4;
+
+				//Since the monkey sprite has some size to it,  we render the slider a little longer so the head always appears on the slider.
+				SliderFillBox4.P1.Y = SLIDER4_REGION_START_Y - Sprite_16BPP_565_Mushroom___1UP.SizeY/2;   
+				SliderFillBox4.P1.X = (SLIDER4_REGION_STOP_X+SLIDER4_REGION_START_X)/2 - 5;
+				SliderFillBox4.P2.Y= VolumeSliderPosition;
+				SliderFillBox4.P2.X= (SLIDER4_REGION_STOP_X+SLIDER4_REGION_START_X)/2 + 5;
+				
+				eGFX_DrawFilledBox(&eGFX_BackBuffer,&SliderFillBox4,eGFX_RGB888_TO_RGB565(0,0,255));
+				
+				//Now let's draw the monkey head. The "blit" function just copies one ImagePlane to another.
+				//In this case we will copy the monkey head to our back buffer
+				
+				eGFX_Blit(&eGFX_BackBuffer,
+								SLIDER4_REGION_START_X,
+								VolumeSliderPosition - Sprite_16BPP_565_Mushroom___1UP.SizeY/2 + 1,																			 //y coordinate of where to put the monkey head
+								&Sprite_16BPP_565_Mushroom___1UP);																								
+			
+			
+			  //Let's draw some lines on the left and right to define our boundaries
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER4_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER4_REGION_START_Y,SLIDER4_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER4_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2+1,SLIDER4_REGION_START_Y,SLIDER4_REGION_START_X-5,eGFX_RGB888_TO_RGB565(255,255,255));
+				
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER4_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2,SLIDER4_REGION_START_Y,SLIDER4_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				eGFX_DrawVline(&eGFX_BackBuffer,SLIDER4_REGION_STOP_Y+Sprite_16BPP_565_Mushroom___1UP.SizeY/2-1,SLIDER4_REGION_START_Y,SLIDER4_REGION_STOP_X+5,eGFX_RGB888_TO_RGB565(255,255,255));
+				//The last step is to dump the backbuffer to the screen.
+				eGFX_Dump(&eGFX_BackBuffer);
+	}
+
+

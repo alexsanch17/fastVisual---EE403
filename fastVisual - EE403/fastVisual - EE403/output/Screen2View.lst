@@ -1,0 +1,3 @@
+L 1 "C:\TouchGFXProjects\Button\gui\src\screen2_screen\Screen2View.cpp"
+C "C:\TouchGFXProjects\Button\gui\src\screen2_screen\Screen2View.cpp" 1 46 cannot open source input file "gui/screen2_screen/Screen2View.hpp": No such file or directory
+N#include <gui/screen2_screen/Screen2View.hpp>

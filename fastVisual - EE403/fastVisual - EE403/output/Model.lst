@@ -1,0 +1,37 @@
+L 1 "C:\TouchGFXProjects\Button\gui\src\model\Model.cpp"
+N/******************************************************************************
+N *
+N * @brief     This file is part of the TouchGFX 4.8.0 evaluation distribution.
+N *
+N * @author    Draupner Graphics A/S <http://www.touchgfx.com>
+N *
+N ******************************************************************************
+N *
+N * @section Copyright
+N *
+N * This file is free software and is provided for example purposes. You may
+N * use, copy, and modify within the terms and conditions of the license
+N * agreement.
+N *
+N * This is licensed software for evaluation use, any use must strictly comply
+N * with the evaluation license agreement provided with delivery of the
+N * TouchGFX software.
+N *
+N * The evaluation license agreement can be seen on www.touchgfx.com
+N *
+N * @section Disclaimer
+N *
+N * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Draupner Graphics A/S has
+N * no obligation to support this software. Draupner Graphics A/S is providing
+N * the software "AS IS", with no express or implied warranties of any kind,
+N * including, but not limited to, any implied warranties of merchantability
+N * or fitness for any particular purpose or warranties against infringement
+N * of any proprietary rights of a third party.
+N *
+N * Draupner Graphics A/S can not be held liable for any consequential,
+N * incidental, or special damages, or any other relief, or for any claim by
+N * any third party, arising from your use of this software.
+N *
+N *****************************************************************************/
+C "C:\TouchGFXProjects\Button\gui\src\model\Model.cpp" 35 31 cannot open source input file "gui/model/Model.hpp": No such file or directory
+N#include <gui/model/Model.hpp>
